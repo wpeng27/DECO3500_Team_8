@@ -1,3 +1,3 @@
 # DECO3500_Team_8
 
-google share slide link: https://docs.google.com/presentation/d/1CQA77t2btgLMlb2HH609sNRt1sNz3gUYF3OV2HYyZ2M/edit?slide=id.p#slide=id.p
+share slide link: https://uq-my.sharepoint.com/:p:/r/personal/s4626160_uq_edu_au/Documents/Documents/Copilot/Created/UQ_PPT_Template.pptx?d=wb6662e53ab004210ae77b9bc67fd1e48&csf=1&web=1&e=0r9rWI
