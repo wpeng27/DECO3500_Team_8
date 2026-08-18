@@ -1,0 +1,7 @@
+Our plan of work has four stages between now and the prototype submission. First, research and validation — we'll run four to six interviews with students who've experienced the anxiety of forming groups with strangers, plus a couple of interviews with domain experts like peer mentors or tutors who observe this pattern across many students. We'll use story-eliciting questions to get at specific moments and underlying values, rather than generic opinions.
+
+Second, we'll converge on a concept. Right now we have four candidate features — course-bound spaces, progressive anonymity, a time-limited window, and an online-to-offline handoff card. Interview data will help us decide which of these matter most, and resolve an open question we still have: how much anonymity do students actually want, versus how much starts to feel isolating rather than safe?
+
+Third is prototyping. Because our concept depends on multi-user, asynchronous interaction — one student posting anonymously, another discovering and matching with them over time — a simple click-through Figma prototype won't capture that experience. We're planning to simulate multiple user perspectives so we can actually test the matching flow, not just individual screens.
+
+Finally, we'll test with three to five target students, focusing specifically on whether the anonymity mechanism feels safe rather than confusing, and whether the time-limited window feels motivating rather than another source of pressure — then iterate based on what we learn.
