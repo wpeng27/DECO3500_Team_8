@@ -26,3 +26,11 @@ It would be helpful to know each person’s skills, availability, preferred role
 6. Is there anything important about forming groups with unfamiliar classmates that I have not asked about?
 
 I think assigned groups can be helpful because they give students a chance to work with unfamiliar classmates. However, it may take some time for group members to understand each other’s strengths and working habits. Having a short introduction or team discussion at the beginning could make the collaboration easier.
+
+Observation
+Assigned grouping can reduce hesitation about approaching unfamiliar classmates.
+Students may still feel concerned about communication, equal contribution, and completing work on time.
+Skills, availability, preferred roles, and working styles are important information for understanding group compatibility.
+Students usually learn about their teammates’ strengths and habits only after they begin working together.
+Assigned groups can provide opportunities to collaborate with unfamiliar classmates.
+A short introduction or team discussion at the beginning could help members understand each other and collaborate more easily.
