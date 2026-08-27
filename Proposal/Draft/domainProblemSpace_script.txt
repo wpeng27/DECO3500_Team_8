@@ -1,0 +1,5 @@
+Our domain is one specific but very common moment in student life: the start of a new course, when students are suddenly expected to form groups with people they've never met. This happens every semester, in every course with group assessment, and it's often one of the very first social interactions a student has in a course.
+
+Research shows nearly a third of university students report anxiety that affects their academic performance, and group work specifically is a frequently cited trigger — not just because of the social pressure, but because of the uncertainty: who will I be working with, and will it go well?
+
+What makes this domain interesting from a social and mobile computing perspective is that it's not a vague, ongoing anxiety — it's a recurring, predictable, time-bound moment. Every course creates the same scenario, tied to a specific timetable slot and specific tutorial room. That gives us a real opportunity: connecting students asynchronously, before they ever walk into that room, based specifically on the course and time slot they share.
