@@ -15,7 +15,7 @@ How did you decide whom to approach, which group to join, or whom to accept as a
 Was there a moment when you hesitated to contact someone or join a group? If so, what were you concerned about? What did you eventually do?
 
 ### 5. Information Needs
-What information would help you judge whether someone might be a reliable or compatible group member? Was there anything you wanted to know but could not find out?
+What would help you judge whether someone might be a reliable or compatible group member? Was there anything you wanted to know but could not notice?
 
 ### 6. Additional Experiences
 Is there anything important about forming groups with unfamiliar classmates that I have not asked about?
