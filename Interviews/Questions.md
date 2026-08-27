@@ -19,3 +19,12 @@ What would help you judge whether someone might be a reliable or compatible grou
 
 ### 6. Additional Experiences
 Is there anything important about forming groups with unfamiliar classmates that I have not asked about?
+
+### 7. Friends Afterwards
+Have you ever met someone through the group-forming process but not ended up being teammates, yet still stayed in contact or became friends?
+
+### 8. Course Friends
+Have you ever wanted to get to know someone from your course but felt unsure about approaching them because you had no reason to talk to them?
+
+### 9. Interaction with others
+After a group is formed, do you usually continue interacting with classmates who aren't in your group? Why or why not?
