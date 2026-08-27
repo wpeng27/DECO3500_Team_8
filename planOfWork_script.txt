@@ -1,9 +1,0 @@
-In Week 5, we will focus on research and validation. Through semi-structured interviews and a literature review, we aim to understand what students actually need when forming groups with unfamiliar peers, rather than assuming the problem or solution. We will synthesise the findings into initial user needs.
-
-During Weeks 6 and 7, we will translate these needs into experience requirements and possible design directions. We will compare low-fidelity concepts using scenarios and workflows, before developing an early interactive prototype. This allows us to refine the concept without committing too early to a particular platform.
-
-In Week 8, we will evaluate the early prototype through task-based think-aloud testing and heuristic evaluation. The findings will help us identify usability problems and guide the development of the key multi-user interactions.
-
-During Weeks 9 to 11, we will continue testing, refining and developing the proof of concept. End-to-end multi-user testing will help us examine whether the experience supports students’ needs without creating additional pressure or exclusion.
-
-By the end of Week 11, we aim to have a refined multi-user proof of concept ready for the Week 12 exhibition, followed by final documentation in Week 13.
