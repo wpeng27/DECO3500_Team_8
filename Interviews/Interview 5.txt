@@ -1,0 +1,71 @@
+Interview Questions
+The following semi-structured interview questions were used to explore students' experiences of forming course groups with classmates they did not know well.
+
+1. Group Formation Context
+Think about the most recent time you had to form a course group with classmates you did not know well. What course was it? Were the groups self-formed or assigned?
+
+A: last semester, the course name is International Supply Chain, I was required to form the group and find teammates on my own, and I dont know anyone in the classroom.
+
+2. Group Formation Process
+Could you walk me through what happened, from when the group task was announced to when your group was finally formed?
+A: I was so anxious due to I dont know anyone beforehand, however the professor said that they will help to form the group at last, but I know leaving everything to the last minute is not a good idea. As for how I found my group at last, I just talk to the students who sitted next to me at the seminar when the day the professor will try to allocate the students who were lelft, then thats how I form a group most recently.
+
+3. Decision-Making
+How did you decide whom to approach, which group to join, or whom to accept as a group member? What information did you use to make that decision?
+A: I just looking at their performance, such as the willing of conversation, outgoing or not.
+
+4. Hesitation and Concerns
+Was there a moment when you hesitated to contact someone or join a group? If so, what were you concerned about? What did you eventually do?
+A: yes, if they are speaking very fluent English then I might find someone else, due to there the invisible sense of oppression.
+
+5. Information Needs
+What would help you judge whether someone might be a reliable or compatible group member? Was there anything you wanted to know but could not notice?
+A: I dont really mind, due to I have the confidence that I can handle the workload on my own, thats what I was thinking when I enrolled into the course with coursework.
+
+6. Additional Experiences
+Is there anything important about forming groups with unfamiliar classmates that I have not asked about?
+A: I think better to check the GPA at the worst stage.
+
+7. Friends Afterwards
+Have you ever met someone through the group-forming process but not ended up being teammates, yet still stayed in contact or became friends?
+A: no
+
+8. Course Friends
+Have you ever wanted to get to know someone from your course but felt unsure about approaching them because you had no reason to talk to them?
+A: no
+
+9. Interaction with others
+After a group is formed, do you usually continue interacting with classmates who aren't in your group? Why or why not?
+A: no, I just focus on the team work
+
+
+Here's the English version of the observations from this interview:
+
+Interview Observations
+1. Anxiety vs. Last-Minute Avoidance Behavior
+
+The interviewee explicitly reported feeling anxious from the outset ("I was so anxious"), yet still delayed action until the professor was about to assign remaining students to groups — at which point they approached a nearby classmate out of necessity. This supports the design assumption behind the time-limited active window: simply providing a tool for early connection may not be enough. A nudge or deadline-driven mechanism may be needed to counteract avoidance-driven procrastination, since users may not act on the tool until forced to.
+
+2. "Invisible Sense of Oppression" — A More Specific Pain Point Than General Stranger Anxiety
+
+This is the most notable finding in the interview. The interviewee reported actively avoiding classmates who spoke very fluent English, describing this as producing an "invisible sense of oppression." This is not generic social anxiety toward strangers — it's a form of status anxiety rooted in perceived competence gaps, particularly relevant for international students, where language fluency becomes an implicit evaluative dimension that causes self-screening and withdrawal before any real interaction occurs.
+
+This insight can directly strengthen the persuasiveness of the Wei persona on Slides 2/3, and further supports the progressive anonymity design logic: if first impressions are typically formed through verbal/spoken interaction, then an anonymous or semi-anonymous text-based icebreaking stage could delay fluency-based judgment and give users a buffer period before being evaluated on spoken language performance.
+
+3. Superficial Selection Criteria with an Underlying Desire for Risk Mitigation
+The primary method for choosing group members was observing surface-level social cues (willingness to talk, outgoing personality) rather than competence or reliability indicators.
+However, the interviewee also mentioned that "in the worst case, checking GPA" would be worthwhile — revealing an underlying desire for more substantive reliability information, even though no accessible channel for this currently exists, forcing reliance on superficial personality cues instead.
+
+This points to a potential design opportunity: if the platform could surface more structured, lower-risk information (e.g., self-declared availability, past group-work experience, self-reported working style tags) rather than relying solely on chat-based impressions, it might better address this underlying need to "verify compatibility" that currently goes unmet. Note, however, that GPA-type information raises privacy and feasibility concerns, so the design should look for alternative, lower-sensitivity trust signals.
+
+4. Not All Students Experience High Anxiety — User Heterogeneity
+
+In response to Q5, the interviewee stated: "I don't really mind, because I have the confidence that I can handle the workload on my own" — a mindset formed at the point of enrolling in a coursework-based course. This is a reminder that the target user group is not homogeneous: some students, particularly those who mentally prepared for a coursework-heavy course, have relatively low social needs and are less sensitive to group quality. This doesn't undermine the chosen persona direction, but it suggests the audience profile on Slide 3 should more clearly define the core target user as those with high anxiety and a strong desire for early connection — rather than generalizing to all students.
+
+5. Relationships Do Not Extend Beyond the Immediate Task
+
+Responses to Q7–Q9 were uniformly "no" — no lasting contact was formed with people met during group formation who weren't ultimately teammates, and there was no continued interaction with classmates outside the group after formation. This suggests that current group-forming behavior is purely task-oriented and transactional, with no accumulation of broader social capital. This is a useful check on platform scope: if the goal is solely to solve the pre-group icebreaking pain point, this finding aligns well (no need to force a long-term social network). However, if the team wants the platform to also foster longer-term in-course peer networks, this data indicates that such behavior does not occur naturally by default — additional design features would be needed to create incentives for maintaining these connections.
+
+Overall, the most valuable contribution of this interview is that it concretizes "social anxiety" into a specific status anxiety triggered by perceived language fluency, which is more precise and vivid than generic "fear of strangers" framing, and resonates strongly with the lived experience of international students. This finding could be directly cited in the design rationale section to strengthen the justification for the progressive self-disclosure design choice.
+
+If you have other interview transcripts, I can help build a cross-interview affinity map to check whether this "invisible sense of oppression" theme recurs across participants or is specific to this individual case.
