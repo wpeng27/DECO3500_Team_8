@@ -1,6 +1,6 @@
 # DECO3500_Team_8
 
-link of questionnaire: https://forms.cloud.microsoft/Pages/AnalysisPage.aspx?AnalyzerToken=vxlCoOK0NGyzn68z98bYejLc9kOrQrC9&id=z3fjtrOdy0aRovrZYFuxXC2dnxS6knNLhKpiupF-qDdUOFgwRUs3VlpUT0Q5NUdTVVBQSEFSTlJCOC4u
+link of questionnaire result: https://forms.cloud.microsoft/Pages/AnalysisPage.aspx?AnalyzerToken=vxlCoOK0NGyzn68z98bYejLc9kOrQrC9&id=z3fjtrOdy0aRovrZYFuxXC2dnxS6knNLhKpiupF-qDdUOFgwRUs3VlpUT0Q5NUdTVVBQSEFSTlJCOC4u
 =================================================================
 group based miro link: https://miro.com/welcomeonboard/cFB3UzNDUjlKaERDT2s1WTdSL0ErV3pmVEE1YWFNRnQ1MzNLbGxNaG83RlJwV01PdnpFMGN5ZFRjVGVpRmsyVmxsT2FVNFFWZlgxWXBHNC9nVXlScURMRDRqcndzMXJGU2VwMmVtQzBsVVpGRkR6SktBNW5Vem0xd29GckNXQWhBS2NFMDFkcUNFSnM0d3FEN050ekl3PT0hdjE=?share_link_id=277573078957
 =================================================================
