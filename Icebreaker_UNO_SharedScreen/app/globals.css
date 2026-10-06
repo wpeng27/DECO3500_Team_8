@@ -126,3 +126,34 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .radial-board .corner-content{position:relative}
 .flash-banner{position:absolute;left:0;right:0;bottom:calc(100% + 8px);box-shadow:0 4px 18px #0005}
 .radial-board .corner:has(.flashing){z-index:2}
+/* Quiet detector: mic toggle, status line and nudge when the table goes quiet */
+.ambient-toggle{position:absolute;top:14%;right:14%;padding:8px;border-radius:50%;background:#ffffff14;border:1px solid #ffffff33;color:#8f9bb6}
+.ambient-toggle:hover{background:#ffffff24}
+.ambient-toggle.on{background:#13a88c33;border-color:#13a88c;color:#bff0e4}
+/* Mic reacts to sound: the ring grows with the measured volume so people can see it is listening */
+.ambient-toggle{transition:background .15s,box-shadow .12s linear,transform .12s linear}
+.ambient-toggle[data-state=listening]{--ring:min(1,calc(var(--level,0)*1.4));box-shadow:0 0 0 calc(var(--ring)*6px) #13a88c66,0 0 0 calc(var(--ring)*14px) #13a88c22;transform:scale(calc(1 + var(--ring)*.15))}
+.ambient-toggle[data-state=starting],.ambient-toggle[data-state=calibrating]{animation:micWarmup 1.4s ease-in-out infinite}
+.ambient-toggle[data-state=denied],.ambient-toggle[data-state=unsupported],.ambient-toggle[data-state=error]{background:#f0a23b26;border-color:#f0a23b;color:#ffd9a3}
+@keyframes micWarmup{0%,100%{box-shadow:0 0 0 0 #13a88c55}50%{box-shadow:0 0 0 7px #13a88c00}}
+@media(prefers-reduced-motion:reduce){.ambient-toggle[data-state=starting],.ambient-toggle[data-state=calibrating]{animation:none}.ambient-toggle[data-state=listening]{transform:none}}
+.ambient-note{display:flex;align-items:center;gap:7px;font-size:11px;color:#8f9bb6;max-width:80%;line-height:1.4}
+.ambient-meter{flex-shrink:0;width:34px;height:5px;border-radius:3px;background:#ffffff1f;overflow:hidden}
+.ambient-meter i{display:block;height:100%;background:#13a88c;transition:width .1s linear}
+.lull-nudge svg{color:#fc986d}
+.lull-nudge .outline-light{margin-top:12px;font-size:13px;padding:7px 14px;border-radius:9px}
+.corner-draw.nudge{animation:drawNudge 1.6s ease-in-out infinite}
+@keyframes drawNudge{0%,100%{box-shadow:0 0 0 0 #fc986d00}50%{box-shadow:0 0 0 6px #fc986d88}}
+@media(prefers-reduced-motion:reduce){.corner-draw.nudge{animation:none;box-shadow:0 0 0 3px #fc986d}}
+@media(max-width:600px){.table-page .center-circle{position:relative}.ambient-toggle{top:12px;right:12px}}
+/* ?debug panel for tuning the quiet detector */
+.ambient-debug{position:fixed;right:12px;bottom:12px;z-index:60;width:290px;max-width:calc(100% - 24px);background:#0d1428ee;color:#dfe6f5;border:1px solid #ffffff2e;border-radius:12px;padding:12px 14px;font:12px/1.5 ui-monospace,Consolas,monospace;box-shadow:0 8px 30px #0006;pointer-events:none}
+.ambient-debug strong{display:block;font-size:12px;color:#b5a6fc;margin-bottom:6px}
+.ambient-debug dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0}
+.ambient-debug dt{color:#8f9bb6}
+.ambient-debug dd{margin:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ambient-debug dd small{color:#8f9bb6;font-size:11px}
+.ambient-debug dd i{width:8px;height:8px;border-radius:50%;background:#ffffff33}
+.ambient-debug dd i.on{background:#13a88c}
+.ambient-debug-bar{height:4px;margin-top:8px;border-radius:2px;background:#ffffff1a;overflow:hidden}
+.ambient-debug-bar i{display:block;height:100%;background:#fc986d}

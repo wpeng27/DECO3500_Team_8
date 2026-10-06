@@ -19,6 +19,12 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
    - **Pause / Resume** pauses the game for a chat.
    - **Random rule** switches to a different rule (Hidden cards, Optional questions, Give a card, Swap cards, or Normal UNO).
 7. The **Rules** button in the top right returns to the rules screen. Seats are kept.
+8. **Quiet detector (optional).** The microphone button in the centre circle turns on a detector that notices when the table goes quiet.
+   - It spends the first 5 seconds measuring the background noise, then keeps adjusting to it.
+   - If almost nobody has spoken for about 25 seconds (12 seconds while paused), the circle shows "It's gone quiet" and every **Draw a question** button glows.
+   - The nudge goes away when people start talking again, when someone draws a question, or when someone chooses **Not now**.
+   - Sound is only measured for loudness inside the browser. Nothing is recorded, saved or sent. The microphone only works on `localhost` or HTTPS.
+   - The logic is in `hooks/use-ambient-silence.ts`. The thresholds are constants at the top of that file.
 
 ## Run locally
 
