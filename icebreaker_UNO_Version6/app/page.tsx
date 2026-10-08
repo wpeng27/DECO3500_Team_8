@@ -3,7 +3,7 @@
 import {useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
 import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Shuffle,Sparkles,UserRound,X} from 'lucide-react';
-import {QUESTIONS,RULES} from '../lib/game';
+import {QUESTIONS,RULES,isOptOut} from '../lib/game';
 
 type Seat={name:string;email:string;guest:boolean};
 type AnswerHistory=Record<number,number>;
@@ -38,8 +38,23 @@ function rgbToHex(rgb:[number,number,number]){
   return '#'+rgb.map(value=>Math.round(Math.max(0,Math.min(255,value))).toString(16).padStart(2,'0')).join('');
 }
 
+function rgbToHsl([r,g,b]:[number,number,number]):[number,number,number]{
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),l=(max+min)/2,d=max-min;
+  if(!d)return [0,0,l];
+  const s=d/(1-Math.abs(2*l-1));
+  const h=max===r?((g-b)/d+6)%6:max===g?(b-r)/d+2:(r-g)/d+4;
+  return [h*60,s,l];
+}
+
+function hslToRgb([h,s,l]:[number,number,number]):[number,number,number]{
+  const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;
+  const [r,g,b]=h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];
+  return [(r+m)*255,(g+m)*255,(b+m)*255];
+}
+
 function compareAnswers(a:AnswerHistory,b:AnswerHistory):PairMatch{
-  const shared=Object.keys(a).map(Number).filter(question=>b[question]!==undefined);
+  const shared=Object.keys(a).map(Number).filter(question=>b[question]!==undefined&&!isOptOut(question,a[question])&&!isOptOut(question,b[question]));
   const same=shared.filter(question=>a[question]===b[question]).length;
   return {shared:shared.length,same,score:shared.length?Math.round(same/shared.length*100):null};
 }
@@ -47,7 +62,10 @@ function compareAnswers(a:AnswerHistory,b:AnswerHistory):PairMatch{
 function evolvingColors(histories:AnswerHistory[],seats:(Seat|null)[]){
   return BASE_COLORS.map((base,index)=>{
     if(!seats[index])return base;
-    const total=hexToRgb(base).map(Number) as [number,number,number];
+    // Blend in HSL rather than RGB: averaging RGB pulls contrasting colours towards grey,
+    // whereas averaging hue on the colour wheel keeps the mixed colour bright.
+    const [baseHue,baseSat,baseLight]=rgbToHsl(hexToRgb(base));
+    let hueX=Math.cos(baseHue*Math.PI/180),hueY=Math.sin(baseHue*Math.PI/180),sat=baseSat,light=baseLight;
     let totalWeight=1;
     histories.forEach((history,peerIndex)=>{
       if(peerIndex===index||!seats[peerIndex])return;
@@ -56,13 +74,16 @@ function evolvingColors(histories:AnswerHistory[],seats:(Seat|null)[]){
       // A disagreement reduces influence instead of falsely forcing colours together.
       const influence=match.shared?Math.min(1,(2*match.same)/(match.shared+2)):0;
       if(!influence)return;
-      const peer=hexToRgb(BASE_COLORS[peerIndex]);
-      total[0]+=peer[0]*influence;
-      total[1]+=peer[1]*influence;
-      total[2]+=peer[2]*influence;
+      const [h,sPeer,lPeer]=rgbToHsl(hexToRgb(BASE_COLORS[peerIndex]));
+      hueX+=Math.cos(h*Math.PI/180)*influence;
+      hueY+=Math.sin(h*Math.PI/180)*influence;
+      sat+=sPeer*influence;
+      light+=lPeer*influence;
       totalWeight+=influence;
     });
-    return rgbToHex([total[0]/totalWeight,total[1]/totalWeight,total[2]/totalWeight]);
+    // Opposite hues can cancel out; keep the seat's own hue rather than an arbitrary one.
+    const hue=Math.hypot(hueX,hueY)<1e-3?baseHue:(Math.atan2(hueY,hueX)*180/Math.PI+360)%360;
+    return rgbToHex(hslToRgb([hue,sat/totalWeight,light/totalWeight]));
   });
 }
 
@@ -168,7 +189,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
         <div className="seat-player"><span className="seat-avatar">{seat.guest?<UserRound size={18}/>:seat.name[0].toUpperCase()}</span><div><strong>{seat.name}</strong><span>{seat.guest?`Guest · ${label}`:`Signed in · ${label}`}</span><small className="colour-status"><i/>{answerCount?`${answerCount} ${answerCount===1?'answer':'answers'} shaping colour`:'Colour starts unique'}</small></div><button className="seat-leave" title="Leave this seat" aria-label="Leave this seat" onClick={leave}><LogOut size={14}/></button></div>
         {ended?<MatchSummary overall={overall} matches={matches} seats={allSeats}/>:<>
           <button className="corner-draw" type="button" onClick={draw}><MessageCircleQuestion size={15}/>{q?'Draw another':'Draw a question'}</button>
-          {q&&<div className="corner-question"><button className="corner-question-close" type="button" aria-label="Close question" onClick={()=>setQuestion(null)}><X size={14}/></button><span className="question-badge">Question</span><p>{q.text}</p><div className="question-options">{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" className={picked===optionIndex?'selected':''} aria-pressed={picked===optionIndex} onClick={()=>{setPicked(optionIndex);onAnswer(question!,optionIndex)}}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div></div>}
+          {q&&<div className="corner-question"><button className="corner-question-close" type="button" aria-label="Close question" onClick={()=>setQuestion(null)}><X size={14}/></button><span className="question-badge">Question · Choose one</span><p>{q.text}</p><div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>{setPicked(optionIndex);onAnswer(question!,optionIndex)}}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div></div>}
         </>}
       </>}
     </div>
@@ -194,7 +215,7 @@ export default function Home(){
   const colors=evolvingColors(histories,seats);
 
   function answer(seatIndex:number,questionIndex:number,optionIndex:number){
-    const matched=histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]===optionIndex?[peerIndex]:[]);
+    const matched=isOptOut(questionIndex,optionIndex)?[]:histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]===optionIndex?[peerIndex]:[]);
     setHistories(all=>all.map((history,index)=>index===seatIndex?{...history,[questionIndex]:optionIndex}:history));
     if(matched.length){
       const names=[seatIndex,...matched].map(index=>displayName(seats[index]!,index));
