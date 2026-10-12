@@ -12,8 +12,8 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
    - **Continue as Guest**: sit down without sharing anything.
 
    The email is not shown on screen. A seated player can leave with the button next to their name.
-4. **Draw a question.** Each seated player has a **Draw a question** button. It shows a random question from the question bank in that player's corner. **Draw another** shows a different question. Answering is optional.
-5. **Progressive colour matching.** Each seat starts with a different colour. When two players choose the same answer to the same question, their panels flash and both colours move toward one another. Repeated matching evidence brings the colours closer; different answers keep them more distinct.
+4. **Draw a question.** Each seated player has a **Draw a question** button. It shows a random question from the question bank in that player's corner. Choose an option, then select **Submit answer** to save it and close the question. You can change your selection before submitting. **Skip question** closes the question without saving the selection or affecting colour matching and scores, even if an option is already selected. **Draw another** shows a different question, and closing or replacing a question discards any unsubmitted selection. Answering is optional.
+5. **Progressive colour matching.** Each seat starts with a different colour. When two players submit the same answer to the same question, their panels flash and both colours move toward one another. Repeated matching evidence brings the colours closer; different answers keep them more distinct.
    - Colour is recalculated from the accumulated answer history, not only the latest answer.
    - A match is compared only when both players have answered the same question.
 6. **Finish and reveal.** Choose **Finish game** to replace the question controls with a result panel in every occupied corner. Each player sees a percentage with every other seated player, the number of shared questions behind it, and a weighted overall percentage.

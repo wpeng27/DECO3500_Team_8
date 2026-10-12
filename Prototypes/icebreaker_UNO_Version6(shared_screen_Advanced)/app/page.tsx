@@ -163,6 +163,17 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
     setPicked(history[next]??null);
   }
 
+  function closeQuestion(){
+    setQuestion(null);
+    setPicked(null);
+  }
+
+  function submitAnswer(){
+    if(question===null||picked===null)return;
+    onAnswer(question,picked);
+    closeQuestion();
+  }
+
   function leave(){
     setQuestion(null);
     setPicked(null);
@@ -189,7 +200,15 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
         <div className="seat-player"><span className="seat-avatar">{seat.guest?<UserRound size={18}/>:seat.name[0].toUpperCase()}</span><div><strong>{seat.name}</strong><span>{seat.guest?`Guest · ${label}`:`Signed in · ${label}`}</span><small className="colour-status"><i/>{answerCount?`${answerCount} ${answerCount===1?'answer':'answers'} shaping colour`:'Colour starts unique'}</small></div><button className="seat-leave" title="Leave this seat" aria-label="Leave this seat" onClick={leave}><LogOut size={14}/></button></div>
         {ended?<MatchSummary overall={overall} matches={matches} seats={allSeats}/>:<>
           <button className="corner-draw" type="button" onClick={draw}><MessageCircleQuestion size={15}/>{q?'Draw another':'Draw a question'}</button>
-          {q&&<div className="corner-question"><button className="corner-question-close" type="button" aria-label="Close question" onClick={()=>setQuestion(null)}><X size={14}/></button><span className="question-badge">Question · Choose one</span><p>{q.text}</p><div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>{setPicked(optionIndex);onAnswer(question!,optionIndex)}}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div></div>}
+          {q&&<div className="corner-question">
+            <button className="corner-question-close" type="button" aria-label="Close question" onClick={closeQuestion}><X size={14}/></button>
+            <span className="question-badge">Question · Choose one</span><p>{q.text}</p>
+            <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>setPicked(optionIndex)}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
+            <div className="question-actions">
+              <button className="primary" type="button" disabled={picked===null} onClick={submitAnswer}><Check size={14}/>Submit answer</button>
+              <button className="ghost" type="button" onClick={closeQuestion}>Skip question</button>
+            </div>
+          </div>}
         </>}
       </>}
     </div>

@@ -113,6 +113,8 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .question-options button span{color:#b5a2ff;font-weight:700}
 .question-options button.selected{background:#604dc1;border-color:#a291eb;color:#fff}
 .question-options button.selected span{color:#fff}
+.question-actions{display:grid;gap:6px;margin-top:10px}
+.question-actions button{width:100%;padding:8px 12px;border-radius:8px;font-size:12px}
 .radial-board .corner{position:relative}
 /* Top seats face the opposite edge of the shared screen */
 .radial-board .corner-tl,.radial-board .corner-tr{transform:rotate(180deg)}
