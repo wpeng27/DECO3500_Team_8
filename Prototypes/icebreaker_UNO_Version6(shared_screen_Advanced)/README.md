@@ -11,7 +11,7 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
    - **Sign in**: enter an email and a preferred name.
    - **Continue as Guest**: sit down without sharing anything.
 
-   The email is not shown on screen and is only used to record who took part in the game (see **Participation records** below). The rules screen and the sign-in form both say so. A seated player can leave with the button next to their name. Leaving clears that player's answers, so the button needs a second press: the first press turns it red with "Press again to leave", and clicking anywhere else cancels.
+   The email is not shown on screen and is only used to record who took part in the game (see **Participation records** below). The rules screen and the sign-in form both say so. A seated player can leave with the button next to their name. Leaving clears that player's answers, so the button needs a second press: the first press turns it red and shows "Press the red button again to leave. Your answers will be cleared." under the player's name, and clicking anywhere else cancels.
 
    Each seat has a thick border in its own colour. The border never changes, so seats stay easy to tell apart even after the inside colours blend (see step 5).
 4. **Start the game.** Once at least two players are seated, press **Start game** in the centre circle. This starts the 10-minute countdown. Until then the circle shows **Ready** and 10:00, and the corners show "Questions start when the game starts" instead of the draw button.
