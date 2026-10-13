@@ -23,9 +23,10 @@ The topic names are also shown on the result screen (see below). The prototype s
 2. **Which question comes up.** The screen picks it, not pure chance:
    - It is always a question this player has **not answered yet**, so an earlier answer is never overwritten.
    - Among those, it prefers the question **the most other seated players have already answered**. If several are tied, one of them is picked at random.
-   - Once a player has answered all 10, any question can come up again.
+   - Answered questions are never drawn again. Once a player has answered all 10, their corner says "You have answered every question" and they draw no more.
 3. **Answer or skip.** After reading the question, the player either chooses an option and presses **Submit answer**, or presses **Skip question** (or ×) to close it without answering. A drawn question cannot be swapped for another one.
-4. **Counting.** The table shares one count of drawn questions, answered or skipped. After every third, the extra rule changes automatically.
+4. **Counting.** The table counts answered and skipped questions, but only answers move the rule on: after every third answer, the extra rule changes automatically. Skips do not count, so skipping cannot be used to get rid of a rule.
+5. **Pausing.** While the game is paused, nobody can draw a new question. A question that is already open can still be answered or skipped.
 
 **Why it works this way:** a similarity score can only be calculated between two players who have answered the same question. A 10-minute game gives roughly 8–12 questions for the whole table, about 2–3 per player. With pure random drawing, around half of player pairs would end with no shared question. Steering players towards questions others have answered means almost every pair has 1–2 questions in common at the end.
 

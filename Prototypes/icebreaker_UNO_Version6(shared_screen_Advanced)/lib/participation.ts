@@ -75,8 +75,14 @@ function csvCell(value:string|number|boolean){
   return /[",\n\r]/.test(text)?`"${text.replace(/"/g,'""')}"`:text;
 }
 
+// A row without an end time belongs to a game that is still running, or whose page was closed
+// or refreshed before it ended; say so instead of leaving the end reason blank.
+function withEndReason(row:ParticipationRow):ParticipationRow{
+  return row.gameEndedAt?row:{...row,endReason:'Not finished (still playing, or page closed)'};
+}
+
 export function downloadCsv(rows:ParticipationRow[]){
-  const lines=[COLUMNS.map(([,header])=>header).join(','),...rows.map(row=>COLUMNS.map(([key])=>csvCell(row[key])).join(','))];
+  const lines=[COLUMNS.map(([,header])=>header).join(','),...rows.map(withEndReason).map(row=>COLUMNS.map(([key])=>csvCell(row[key])).join(','))];
   // The byte-order mark makes Excel read non-English names correctly.
   const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
