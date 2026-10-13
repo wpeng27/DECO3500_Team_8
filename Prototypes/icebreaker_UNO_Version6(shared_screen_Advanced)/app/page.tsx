@@ -1,9 +1,11 @@
 'use client';
 
-import {useEffect,useState} from 'react';
+import {useEffect,useState,useSyncExternalStore} from 'react';
 import type {CSSProperties} from 'react';
-import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Sparkles,UserRound,X} from 'lucide-react';
+import {Check,Download,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Sparkles,Trash2,UserRound,X} from 'lucide-react';
 import {QUESTIONS,RULES,isMatch,isOptOut} from '../lib/game';
+import {clearLog,downloadCsv,readLog,saveRows} from '../lib/participation';
+import type {ParticipationRow} from '../lib/participation';
 
 type Seat={name:string;email:string;guest:boolean};
 type AnswerHistory=Record<number,number>;
@@ -29,7 +31,7 @@ const ruleHelp:Record<string,string>={
 
 const steps=[
   ['Take a seat','Up to four people can play on this screen. Take one corner as your seat.'],
-  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details.'],
+  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details. Your email is only used to record who took part in the game, and is not used for anything else.'],
   ['Start the game','Once at least two players are seated, press Start game in the circle in the middle. This starts the 10-minute timer.'],
   ['Play UNO with real cards','Play UNO with physical cards around the screen. The circle in the middle shows the time left and the current extra rule. Anyone can press Pause, which also stops the timer.'],
   ['Draw a question after each action card','Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. When you play one, press Draw a question in your corner and read the question. Then either choose an answer and press Submit answer, or press Skip question if you would rather not answer.'],
@@ -37,6 +39,14 @@ const steps=[
   ['Rules change automatically','The screen counts every question drawn at the table, answered or skipped. After every three, the extra rule changes automatically and the screen shows Rule changed.'],
   ['When does the game end?','The game lasts 10 minutes from when you press Start game. It ends when the timer reaches zero or when someone has no cards left, whichever comes first. If someone has no cards left, press Player out of cards. Each corner then shows your similarity scores with the other players.'],
 ];
+
+// Local date and time, readable in a spreadsheet: 2026-10-13 14:05:09
+function stamp(date=new Date()){
+  const pad=(value:number)=>String(value).padStart(2,'0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+const noSubscribe=()=>()=>{};
 
 function formatTime(seconds:number){
   return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
@@ -142,7 +152,27 @@ function Brand(){
 }
 
 function Intro({onConfirm,inProgress}:{onConfirm:()=>void;inProgress:boolean}){
-  return <main className="intro"><Brand/><section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol><button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{inProgress?'Back to the game':<>Got it, let&apos;s start</>}</button></section></main>;
+  const [confirmClear,setConfirmClear]=useState(false);
+  const [,setLogVersion]=useState(0);
+  // Read straight from localStorage on each render; null during server rendering.
+  const recordCount=useSyncExternalStore(noSubscribe,()=>readLog().length,()=>null);
+
+  function clearRecords(){
+    if(!confirmClear){setConfirmClear(true);return;}
+    clearLog();
+    setConfirmClear(false);
+    setLogVersion(version=>version+1);
+  }
+
+  return <main className="intro"><Brand/><section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol>
+    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are saved on this device to record who took part in the game. They are only used for that record, not for anything else, and are not sent anywhere. Choose Continue as Guest if you would rather not share them.</p></aside>
+    <button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{inProgress?'Back to the game':<>Got it, let&apos;s start</>}</button>
+    {recordCount!==null&&<div className="intro-records">
+      <span>For the test team: {recordCount} participation {recordCount===1?'record':'records'} saved on this device.</span>
+      <div><button className="ghost" type="button" disabled={!recordCount} onClick={()=>downloadCsv(readLog())}><Download size={15}/>Download CSV</button>
+      <button className={confirmClear?'danger':'ghost'} type="button" disabled={!recordCount} onClick={clearRecords} onBlur={()=>setConfirmClear(false)}><Trash2 size={15}/>{confirmClear?'Click again to clear':'Clear records'}</button></div>
+    </div>}
+  </section></main>;
 }
 
 function MatchSummary({overall,matches,seats}:{overall:number|null;matches:MatchRow[];seats:(Seat|null)[]}){
@@ -248,7 +278,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
       {flash&&<div className="flash-banner" role="status">{flash.text}</div>}
       {!seat?(signingIn?<form className="seat-form" onSubmit={event=>{event.preventDefault();onSit({name:name.trim(),email:email.trim(),guest:false});setSigningIn(false)}}>
         <span className="seat-label">{label} · Sign in</span>
-        <label>Email<input type="email" required autoComplete="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="you@example.com"/></label>
+        <label>Email<input type="email" required autoComplete="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="you@example.com"/><small className="email-note">Only used to record who took part in the game.</small></label>
         <label>Preferred name<input required maxLength={20} value={name} onChange={event=>setName(event.target.value)} placeholder="What should we call you?"/></label>
         <div className="seat-actions"><button className="primary" type="submit" disabled={!name.trim()||!email.trim()}>Sign in</button><button className="ghost" type="button" onClick={()=>setSigningIn(false)}>Cancel</button></div>
       </form>:<div className="seat-empty">
@@ -291,6 +321,13 @@ export default function Home(){
   const [timeLeft,setTimeLeft]=useState(GAME_SECONDS);
   const [endReason,setEndReason]=useState<'time'|'cards'|null>(null);
   const [tally,setTally]=useState({answered:0,skipped:0});
+  // One participation row per person per game, saved to localStorage whenever it changes.
+  const [currentGame,setCurrentGame]=useState<{id:string;startedAt:string}|null>(null);
+  const [gameLog,setGameLog]=useState<ParticipationRow[]>([]);
+
+  useEffect(()=>{
+    saveRows(gameLog);
+  },[gameLog]);
 
   useEffect(()=>{
     if(!flash)return;
@@ -320,6 +357,23 @@ export default function Home(){
   const questionsDone=tally.answered+tally.skipped;
   const untilNextRule=QUESTIONS_PER_RULE-questionsDone%QUESTIONS_PER_RULE;
 
+  function newRow(game:{id:string;startedAt:string},index:number,seat:Seat):ParticipationRow{
+    const joinedAt=stamp();
+    return {id:`${game.id}-${index+1}-${joinedAt}`,gameId:game.id,gameStartedAt:game.startedAt,gameEndedAt:'',endReason:'',seat:SEATS[index].label,name:seat.guest?'Guest':seat.name,email:seat.email,guest:seat.guest,joinedAt,leftAt:'',answered:0,skipped:0};
+  }
+
+  // The row for whoever is sitting in this seat now (not someone who left it earlier).
+  function updateSeatRow(index:number,change:(row:ParticipationRow)=>ParticipationRow){
+    setGameLog(rows=>rows.map(row=>row.seat===SEATS[index].label&&!row.leftAt&&!row.gameEndedAt?change(row):row));
+  }
+
+  function startGame(){
+    const game={id:`G${Date.now().toString(36).toUpperCase()}`,startedAt:stamp()};
+    setCurrentGame(game);
+    setGameLog(seats.flatMap((seat,index)=>seat?[newRow(game,index,seat)]:[]));
+    setGameStarted(true);
+  }
+
   // Answered and skipped questions share one table-wide count; every third one switches the rule.
   function countQuestion(kind:'answered'|'skipped'){
     setTally(current=>({...current,[kind]:current[kind]+1}));
@@ -330,6 +384,7 @@ export default function Home(){
     const matched=isOptOut(questionIndex,optionIndex)?[]:histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]!==undefined&&!isOptOut(questionIndex,history[questionIndex])&&isMatch(questionIndex,optionIndex,history[questionIndex])?[peerIndex]:[]);
     setHistories(all=>all.map((history,index)=>index===seatIndex?{...history,[questionIndex]:optionIndex}:history));
     countQuestion('answered');
+    updateSeatRow(seatIndex,row=>({...row,answered:row.answered+1}));
     if(matched.length){
       const names=[seatIndex,...matched].map(index=>displayName(seats[index]!,index));
       setFlash(previous=>({seats:[seatIndex,...matched],key:(previous?.key??0)+1,text:`${QUESTIONS[questionIndex].complementary?'Complementary roles':'Answer match'}: ${names.join(' & ')} · colours moved closer`}));
@@ -337,6 +392,10 @@ export default function Home(){
   }
 
   function setSeat(index:number,seat:Seat|null){
+    if(playing&&currentGame){
+      if(seat)setGameLog(rows=>[...rows,newRow(currentGame,index,seat)]);
+      else updateSeatRow(index,row=>({...row,leftAt:stamp()}));
+    }
     setSeats(all=>all.map((current,currentIndex)=>currentIndex===index?seat:current));
     if(!seat)setHistories(all=>all.map((history,currentIndex)=>currentIndex===index?{}:history));
   }
@@ -354,6 +413,8 @@ export default function Home(){
     setRuleNotice(null);
     setEndReason(reason);
     setEnded(true);
+    const endedAt=stamp();
+    setGameLog(rows=>rows.map(row=>({...row,gameEndedAt:endedAt,endReason:reason==='time'?'Time up':'Player out of cards'})));
   }
 
   function playAgain(){
@@ -367,6 +428,8 @@ export default function Home(){
     setTimeLeft(GAME_SECONDS);
     setRuleNotice(null);
     setGameStarted(false);
+    setCurrentGame(null);
+    setGameLog([]);
     setSessionKey(key=>key+1);
   }
 
@@ -383,7 +446,7 @@ export default function Home(){
         onSit={value=>setSeat(index,value)}
         onLeave={()=>setSeat(index,null)}
         onAnswer={(questionIndex,optionIndex)=>answer(index,questionIndex,optionIndex)}
-        onSkip={()=>countQuestion('skipped')}
+        onSkip={()=>{countQuestion('skipped');updateSeatRow(index,row=>({...row,skipped:row.skipped+1}));}}
         flash={flash?.seats.includes(index)?flash:null}
         ended={ended}
         playing={playing}
@@ -410,7 +473,7 @@ export default function Home(){
         :<div className="center-idle" key={rule}>{ruleNotice&&<span className="rule-changed-chip">Rule changed</span>}<span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'question':'questions'}</p></div>}
         <div className="center-actions">{ended?
           <button className="primary" onClick={playAgain}><RotateCcw size={16}/>Play again</button>
-          :!gameStarted?<button className="primary start-button" onClick={()=>setGameStarted(true)} disabled={seatedCount<2}><Play size={16}/>Start game</button>
+          :!gameStarted?<button className="primary start-button" onClick={startGame} disabled={seatedCount<2}><Play size={16}/>Start game</button>
           :<><button className="primary" onClick={()=>setPaused(!paused)}>{paused?<><Play size={16}/>Resume</>:<><Pause size={16}/>Pause</>}</button><button className="outline-light finish-button" onClick={()=>finishGame('cards')} disabled={seatedCount<2} title="Press when someone has no cards left"><Flag size={16}/>Player out of cards</button></>}
         </div>
         <small className="seat-count">{ended?'Percentages use shared questions, not private profile data.':`${seatedCount} / 4 seats taken · ${tally.answered} answered · ${tally.skipped} skipped`}</small>

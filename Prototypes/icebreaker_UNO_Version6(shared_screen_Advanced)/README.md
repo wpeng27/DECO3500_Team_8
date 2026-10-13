@@ -11,7 +11,7 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
    - **Sign in**: enter an email and a preferred name.
    - **Continue as Guest**: sit down without sharing anything.
 
-   The email is not shown on screen. A seated player can leave with the button next to their name.
+   The email is not shown on screen and is only used to record who took part in the game (see **Participation records** below). The rules screen and the sign-in form both say so. A seated player can leave with the button next to their name.
 
    Each seat has a thick border in its own colour. The border never changes, so seats stay easy to tell apart even after the inside colours blend (see step 5).
 4. **Start the game.** Once at least two players are seated, press **Start game** in the centre circle. This starts the 10-minute countdown. Until then the circle shows **Ready** and 10:00, and the corners show "Questions start when the game starts" instead of the draw button.
@@ -41,6 +41,16 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
      - **Swap cards:** on your turn, you may swap one card with another player if that player agrees.
 9. The **Rules** button in the top right returns to the rules screen. Seats, answers and the countdown are kept.
 
+## Participation records
+
+The app keeps a log of who took part, so the team can see who has used the system during testing.
+
+- **What is recorded:** one row per person per game, with the game ID, when the game started and ended, why it ended, the seat, the preferred name (or "Guest"), the email (signed-in players only), whether they played as a guest, when they joined, whether and when they left early, and how many questions they answered and skipped.
+- **When:** rows are created when someone presses **Start game** (for everyone seated) or when someone sits down during a game, and are updated as they answer, skip, leave or the game ends. A player who leaves and someone who takes the seat afterwards get separate rows.
+- **Where:** in this browser's `localStorage` on this device only. Nothing is sent to a server, so no database is needed.
+- **Export:** at the bottom of the rules screen, **Download CSV** saves `icebreaker-participants-YYYY-MM-DD.csv`, which opens in Excel. **Clear records** deletes the log after a second click to confirm.
+- **Privacy:** the rules screen and the sign-in form tell players that their email is only used to record who took part in the game and not for anything else. Players who prefer not to share an email can continue as a guest.
+
 ## Run locally
 
 Use Node.js 22.13 or later and npm. In the project folder, run:
@@ -59,7 +69,8 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 
 ## Prototype limits
 
-- All seats, sign-ins and answers live only in the open browser page. Refreshing the page clears them. Nothing is sent to a server.
+- Seats, answers and the current game live only in the open browser page. Refreshing the page clears them. Nothing is sent to a server.
+- Participation records are kept in this browser's `localStorage`, so they only exist on the device the game was played on, and clearing the browser's site data deletes them.
 - The sign-in form does not verify the email or create an account.
 - The question bank has ten questions about study habits and teamwork (`QUESTIONS` in `lib/game.ts`, also listed in `Design/Icebreaker_UNO_Question_Bank.md`).
 - The screen cannot see the physical cards. Players press the buttons themselves after an action card and when someone runs out of cards.
@@ -73,4 +84,5 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 | `app/page.tsx` | The whole app: four seats, answer histories, colour convergence, pairwise percentages and the result state |
 | `app/globals.css` | Styles. The newer styles are at the end of the file |
 | `lib/game.ts` | The question bank (`QUESTIONS`) and rule names (`RULES`) |
+| `lib/participation.ts` | The participation log: saving rows to `localStorage`, clearing them and exporting CSV |
 | `backup/` | The earlier version's page (Host, Shared screen and Player views), kept for reference |
