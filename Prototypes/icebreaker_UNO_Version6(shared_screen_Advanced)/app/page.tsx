@@ -144,7 +144,7 @@ function MatchSummary({overall,matches,seats}:{overall:number|null;matches:Match
   </section>;
 }
 
-function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,color,history,matches,overall,allSeats}:{
+function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,color,history,peerHistories,matches,overall,allSeats}:{
   pos:string;
   label:string;
   seat:Seat|null;
@@ -156,6 +156,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,color,
   ended:boolean;
   color:string;
   history:AnswerHistory;
+  peerHistories:AnswerHistory[];
   matches:MatchRow[];
   overall:number|null;
   allSeats:(Seat|null)[];
@@ -167,8 +168,15 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,color,
   const [picked,setPicked]=useState<number|null>(null);
   const answerCount=Object.keys(history).length;
 
+  // Prefer questions you have not answered that the most other players have, so every pair
+  // builds up shared answers and the similarity score has something to compare.
   function draw(){
-    const next=Math.floor(Math.random()*QUESTIONS.length);
+    const unanswered=QUESTIONS.map((_,index)=>index).filter(index=>history[index]===undefined);
+    const candidates=unanswered.length?unanswered:QUESTIONS.map((_,index)=>index);
+    const answeredByOthers=(index:number)=>peerHistories.filter(peer=>peer[index]!==undefined&&!isOptOut(index,peer[index])).length;
+    const best=Math.max(...candidates.map(answeredByOthers));
+    const top=candidates.filter(index=>answeredByOthers(index)===best);
+    const next=top[Math.floor(Math.random()*top.length)];
     setQuestion(next);
     setPicked(history[next]??null);
   }
@@ -329,6 +337,7 @@ export default function Home(){
         ended={ended}
         color={colors[index]}
         history={histories[index]}
+        peerHistories={histories.filter((_,peerIndex)=>peerIndex!==index&&seats[peerIndex])}
         matches={matchRowsFor(index,histories,seats)}
         overall={overallMatch(index,histories,seats)}
         allSeats={seats}

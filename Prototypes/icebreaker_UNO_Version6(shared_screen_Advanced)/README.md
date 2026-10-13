@@ -12,7 +12,7 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
    - **Continue as Guest**: sit down without sharing anything.
 
    The email is not shown on screen. A seated player can leave with the button next to their name.
-4. **Draw a question after each action card.** Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. Whoever played it presses **Played an action card? Draw a question** in their own corner, which shows a random question from the question bank. The same player then either:
+4. **Draw a question after each action card.** Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. Whoever played it presses **Played an action card? Draw a question** in their own corner, which shows a question from the question bank. The question is chosen so that pairs of players end up with answers to compare: it is one this player has not answered yet, preferring the questions the most other seated players have already answered (ties are broken at random). Once a player has answered every question, any question can come up again. The same player then either:
    - choose an option and press **Submit answer** (the selection can be changed before submitting), or
    - press **Skip question** (or the × button) to close it without answering. A skipped question does not affect colours or scores.
 
@@ -49,7 +49,7 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 
 - All seats, sign-ins and answers live only in the open browser page. Refreshing the page clears them. Nothing is sent to a server.
 - The sign-in form does not verify the email or create an account.
-- The question bank has seven questions (`QUESTIONS` in `lib/game.ts`).
+- The question bank has ten questions about study habits and teamwork (`QUESTIONS` in `lib/game.ts`, also listed in `Design/Icebreaker_UNO_Question_Bank.md`).
 - The screen cannot see the physical cards. Players press the buttons themselves after an action card and when someone runs out of cards.
 - Percentages represent answer similarity within this short activity. They are not a personality test or proof of long-term group compatibility.
 - The server API and database from the earlier version (`app/api/game/route.ts`, `db/`, `drizzle/`) are still in the project, but the current page does not use them.

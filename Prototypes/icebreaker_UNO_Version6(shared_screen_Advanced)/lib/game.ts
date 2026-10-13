@@ -2,7 +2,40 @@ export const INTERESTS=[{id:'games',label:'Games',symbol:'G',color:'#7565F6'},{i
 function hexToRgb(hex:string):[number,number,number]{const n=parseInt(hex.slice(1),16);return [n>>16&255,n>>8&255,n&255]}
 function rgbToHex(r:number,g:number,b:number){return '#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('')}
 export function blendInterestColor(tags:string[]):string{const cols=tags.map(t=>INTERESTS.find(i=>i.id===t)?.color).filter((c):c is string=>!!c);if(!cols.length)return '#8893a8';const sum=cols.reduce((acc,hex)=>{const [r,g,b]=hexToRgb(hex);return [acc[0]+r,acc[1]+g,acc[2]+b]},[0,0,0]);return rgbToHex(sum[0]/cols.length,sum[1]/cols.length,sum[2]/cols.length)}
-export const QUESTIONS=[{text:'When your group receives a new challenge, what do you naturally want to do first?',options:['Generate ideas','Organise the steps','Bring people together','Start making something'],tags:['art','games','food','sport']},{text:'What is one strength you would bring to a team?',options:['Communication','Problem-solving','Organisation','Creativity'],tags:['food','sport','games','art']},{text:'How comfortable are you working with new people?',options:['Very comfortable','Somewhat comfortable','Very uncomfortable','Prefer not to answer'],tags:['food','games','art',null]},{text:'How much do you enjoy teamwork?',options:['Very much','Somewhat','Not at all','Prefer not to answer'],tags:['food','games','art',null]},{text:'How do you deal with pressure?',options:['Stay calm and take a short break','Make a plan and prioritise tasks','Ask others for help','Focus on one task at a time'],tags:['art','games','food','sport']},{text:'What makes someone a good teammate?',options:['Communicates clearly','Completes tasks on time','Supports others','Respects different opinions'],tags:['food','games','sport','art']},{text:'How should a team handle disagreements?',options:["Discuss everyone's views openly",'Find a compromise','Vote on the options','Ask a neutral person for advice'],tags:['food','art','games','sport']}];
+// Question bank for the shared-screen game (10 questions, 4 options each).
+// `tags` are only read by the earlier server version (app/api/game/route.ts); a null tag would mark an opt-out option.
+export const QUESTIONS=[
+  {text:"It's 3 weeks before a group assignment is due. Usually, you've…",
+    options:["Already started a draft","Made a plan but not started","Not started — I work best close to deadlines","Depends on the course"],
+    tags:['games','sport','art','food']},
+  {text:"In a group project, which task would you happily pick up first?",
+    options:["Building / coding","Research & writing","Visual design","Presenting & coordinating"],
+    tags:['games','sport','art','food']},
+  {text:"When do you usually get uni work done?",
+    options:["Mornings","Afternoons","Evenings","Late night"],
+    tags:['games','sport','art','food']},
+  {text:"How do you prefer your group to communicate?",
+    options:["Group chat, reply anytime","One scheduled meeting a week","Mostly face-to-face in tutorials","Shared doc, minimal chatting"],
+    tags:['games','sport','art','food']},
+  {text:"What's your main goal for this course?",
+    options:["Aiming for a 7","Learn well, grade comes second","Just pass comfortably","Pick up one specific skill"],
+    tags:['games','sport','art','food']},
+  {text:"A teammate hasn't replied for 2 days and a deadline is close. You would…",
+    options:["Message them privately","Raise it in the group chat","Quietly cover their part","Let the tutor know"],
+    tags:['games','sport','art','food']},
+  {text:"In your first tutorial, you'd most like to…",
+    options:["Start the conversation myself","Join in once someone else starts","Listen first, talk later","Chat online before meeting in person"],
+    tags:['games','sport','art','food']},
+  {text:"Your group needs to split up the work. You'd prefer to…",
+    options:["Each take one section and own it","Work on everything together","Have one person assign the tasks","Pair up and split into halves"],
+    tags:['games','sport','art','food']},
+  {text:"It's the night before the deadline and your part is about 80% done. You'd most likely…",
+    options:["Submit it — good enough is fine","Keep polishing until it feels right","Send it to the group for feedback first","Depends on how much it's worth"],
+    tags:['games','sport','art','food']},
+  {text:"If a teammate found problems in your part, how would you like to hear about it?",
+    options:["Tell me directly, straight to the point","Mention the good parts first, then the issues","Leave comments in the shared doc","Tell me privately, not in front of the group"],
+    tags:['games','sport','art','food']},
+];
 // A null tag marks an opt-out answer such as 'Prefer not to answer': it never counts as a match.
 export const isOptOut=(question:number,option:number)=>QUESTIONS[question]?.tags[option]===null;
 export const RULES=['Normal UNO','Hidden cards','Optional questions','Give a card','Swap cards'];
