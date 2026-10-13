@@ -173,3 +173,22 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .center-idle[class]{animation:rule-in .5s ease}
 @keyframes rule-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
 @media(max-width:900px){.game-timer{font-size:28px}}
+/* Paused: switch the centre circle to amber with a pulsing ring so it is obvious from across the table */
+.center-circle.paused{background:#8a5410;box-shadow:0 10px 40px #0006,0 0 0 8px #f0a23b66;animation:paused-pulse 2s ease-in-out infinite}
+.center-circle.paused .center-idle svg{color:#ffd28a}
+.center-circle.paused .center-idle h2{color:#fff}
+.center-circle.paused .center-idle p,.center-circle.paused .seat-count{color:#fbe6c6}
+.center-circle.paused .game-timer{color:#ffd28a}
+.center-circle.paused .game-state{background:#00000033;color:#ffe3b5}
+@keyframes paused-pulse{0%,100%{box-shadow:0 10px 40px #0006,0 0 0 6px #f0a23b55}50%{box-shadow:0 10px 40px #0006,0 0 0 18px #f0a23b22}}
+@media(prefers-reduced-motion:reduce){.center-circle.paused{animation:none}}
+/* Question card: wider with larger text so four-option answers wrap less */
+.corner-content:has(.corner-question){width:min(400px,86%)}
+.corner-question{padding:16px 18px}
+.corner-question p{font-size:16px;margin:10px 26px 12px 0}
+.question-options{gap:8px}
+.question-options button{font-size:14px;padding:10px 11px;border-radius:8px;line-height:1.4}
+.question-actions{gap:8px;margin-top:12px}
+.question-actions button{font-size:14px;padding:10px 14px}
+@media(max-width:900px){.corner-content:has(.corner-question){width:min(320px,90%)}.corner-question p{font-size:14px}.question-options button,.question-actions button{font-size:12px;padding:8px 9px}}
+@media(max-width:600px){.corner-content:has(.corner-question){width:100%}}
