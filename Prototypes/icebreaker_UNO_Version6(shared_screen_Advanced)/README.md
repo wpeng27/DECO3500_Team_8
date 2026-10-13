@@ -20,9 +20,11 @@ A shared-screen icebreaker for up to four players. Everyone sits around one scre
 5. **Progressive colour matching.** Each seat starts with a different colour. When two players submit the same answer to the same question, their panels flash and both colours move toward one another. Repeated matching evidence brings the colours closer; different answers keep them more distinct.
    - Colour is recalculated from the accumulated answer history, not only the latest answer.
    - A match is compared only when both players have answered the same question.
-6. **End of the game.** The game ends when the countdown reaches 0:00, or when a player has played all their cards and someone presses **Player out of cards**, whichever happens first. The question controls in every occupied corner are then replaced by a result panel: each player sees a percentage with every other seated player, the number of shared questions behind it, and a weighted overall percentage.
-   - Match percentage is `same answers / questions both people answered`.
-   - If two people have not answered any of the same questions, the interface shows a dash rather than a misleading 0%.
+6. **End of the game.** The game ends when the countdown reaches 0:00, or when a player has played all their cards and someone presses **Player out of cards**, whichever happens first. The question controls in every occupied corner are then replaced by a result panel comparing the player with every other seated player. What each row shows depends on how many questions the two people both answered:
+   - **0 shared questions:** a dash and "No shared question yet".
+   - **1 shared question:** no percentage. The row shows the question's topic and both answers ("You both chose …" or "You chose …; Alex chose …") with a **Same** or **Different** label. One question only gives 0% or 100%, and with four options two people match 25% of the time by chance, so a percentage would mislead.
+   - **2 or more shared questions:** a percentage and "Based on N shared questions". The percentage is `(same answers + 1) / (shared questions + 2)`, so every pair starts at 50% and moves towards the real share of matches as more questions are shared: 2 of 2 the same is 75%, 0 of 2 is 25%, 10 of 10 is 92%.
+   - **Overall match** pools the player's shared questions with everyone and uses the same rule: a percentage once there are 2 or more in total, otherwise a dash.
    - **Play again** clears answers, colours and the question count, resets the rule to Normal UNO and restarts the countdown, but keeps the occupied seats.
 7. **The centre circle** shows whether the game is playing or paused, the time left, the current extra rule, and how many questions the table has answered and skipped.
    - **Pause / Resume** pauses the game and the countdown for a chat.

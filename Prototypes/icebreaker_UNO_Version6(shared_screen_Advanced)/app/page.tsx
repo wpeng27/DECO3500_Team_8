@@ -7,8 +7,9 @@ import {QUESTIONS,RULES,isOptOut} from '../lib/game';
 
 type Seat={name:string;email:string;guest:boolean};
 type AnswerHistory=Record<number,number>;
-type PairMatch={score:number|null;shared:number;same:number};
-type MatchRow={seatIndex:number;score:number|null;shared:number};
+type PairMatch={score:number|null;shared:number;same:number;sharedQuestions:number[]};
+type SingleAnswer={question:number;mine:number;theirs:number};
+type MatchRow={seatIndex:number;score:number|null;shared:number;single:SingleAnswer|null};
 
 const SEATS=[{pos:'tl',label:'Seat 1'},{pos:'tr',label:'Seat 2'},{pos:'bl',label:'Seat 3'},{pos:'br',label:'Seat 4'}];
 const BASE_COLORS=['#7565F6','#11A78D','#E5A037','#E35675'];
@@ -63,10 +64,20 @@ function hslToRgb([h,s,l]:[number,number,number]):[number,number,number]{
   return [(r+m)*255,(g+m)*255,(b+m)*255];
 }
 
+// One shared question can only give 0% or 100%, which says little: with four options, two people
+// pick the same answer 25% of the time by chance. So a percentage needs at least two shared questions.
+const MIN_SHARED_FOR_SCORE=2;
+
+// Every pair starts at 50% and moves towards the real share of matching answers as more questions
+// are shared, so a few answers cannot produce an extreme score: 2/2 same is 75%, 10/10 is 92%.
+function similarity(same:number,shared:number){
+  return shared>=MIN_SHARED_FOR_SCORE?Math.round((same+1)/(shared+2)*100):null;
+}
+
 function compareAnswers(a:AnswerHistory,b:AnswerHistory):PairMatch{
-  const shared=Object.keys(a).map(Number).filter(question=>b[question]!==undefined&&!isOptOut(question,a[question])&&!isOptOut(question,b[question]));
-  const same=shared.filter(question=>a[question]===b[question]).length;
-  return {shared:shared.length,same,score:shared.length?Math.round(same/shared.length*100):null};
+  const sharedQuestions=Object.keys(a).map(Number).filter(question=>b[question]!==undefined&&!isOptOut(question,a[question])&&!isOptOut(question,b[question]));
+  const same=sharedQuestions.filter(question=>a[question]===b[question]).length;
+  return {shared:sharedQuestions.length,same,score:similarity(same,sharedQuestions.length),sharedQuestions};
 }
 
 function evolvingColors(histories:AnswerHistory[],seats:(Seat|null)[]){
@@ -101,7 +112,10 @@ function matchRowsFor(index:number,histories:AnswerHistory[],seats:(Seat|null)[]
   return seats.flatMap((seat,peerIndex)=>{
     if(!seat||peerIndex===index)return [];
     const result=compareAnswers(histories[index],histories[peerIndex]);
-    return [{seatIndex:peerIndex,score:result.score,shared:result.shared}];
+    // With exactly one shared question, show the answers themselves instead of a percentage.
+    const question=result.shared===1?result.sharedQuestions[0]:null;
+    const single=question===null?null:{question,mine:histories[index][question],theirs:histories[peerIndex][question]};
+    return [{seatIndex:peerIndex,score:result.score,shared:result.shared,single}];
   });
 }
 
@@ -114,7 +128,7 @@ function overallMatch(index:number,histories:AnswerHistory[],seats:(Seat|null)[]
     shared+=result.shared;
     same+=result.same;
   });
-  return shared?Math.round(same/shared*100):null;
+  return similarity(same,shared);
 }
 
 function displayName(seat:Seat,index:number){
@@ -132,13 +146,24 @@ function Intro({onConfirm,inProgress}:{onConfirm:()=>void;inProgress:boolean}){
 function MatchSummary({overall,matches,seats}:{overall:number|null;matches:MatchRow[];seats:(Seat|null)[]}){
   return <section className="match-summary" aria-label="Match summary">
     <div className="match-overall"><span>Overall match</span><strong>{overall===null?'—':`${overall}%`}</strong></div>
-    <p className="match-explainer">Based only on questions both people answered.</p>
+    <p className="match-explainer">Compares only questions you both answered. A percentage appears once you share 2 or more questions with someone.</p>
     <div className="match-list">{matches.length?matches.map(match=>{
       const peer=seats[match.seatIndex]!;
+      const peerName=displayName(peer,match.seatIndex);
+      if(match.single){
+        const {question,mine,theirs}=match.single;
+        const q=QUESTIONS[question];
+        const alike=mine===theirs;
+        return <div className="match-row single" key={match.seatIndex}>
+          <div><strong>{peerName}</strong><span className="match-topic">{q.topic} · 1 shared question</span>
+            <span className="match-answers">{alike?<>You both chose <q>{q.options[mine]}</q></>:<>You chose <q>{q.options[mine]}</q>; {peerName} chose <q>{q.options[theirs]}</q></>}</span></div>
+          <b className={alike?'alike':'differ'}>{alike?'Same':'Different'}</b>
+        </div>;
+      }
       return <div className={`match-row ${match.score===null?'unknown':''}`} key={match.seatIndex}>
-        <div><strong>{displayName(peer,match.seatIndex)}</strong><span>{match.shared?`${match.shared} shared ${match.shared===1?'answer':'answers'}`:'No shared answer yet'}</span></div>
+        <div><strong>{peerName}</strong><span>{match.shared?`Based on ${match.shared} shared questions`:'No shared question yet'}</span></div>
         <b>{match.score===null?'—':`${match.score}%`}</b>
-        <span className="match-track" aria-hidden="true"><i style={{width:`${match.score??0}%`}}/></span>
+        {match.score!==null&&<span className="match-track" aria-hidden="true"><i style={{width:`${match.score}%`}}/></span>}
       </div>;
     }):<p className="no-matches">No other seated players.</p>}</div>
   </section>;
@@ -345,7 +370,7 @@ export default function Home(){
       <div className={`center-circle ${paused?'paused':''} ${ended?'ended':''}`}>
         <span className={`game-state ${paused?'paused':'live'} ${ended?'ended':''}`}><i/>{ended?'Results':paused?'Paused':'Playing'}</span>
         {!ended&&<span className={`game-timer ${timeLeft<=60?'low':''}`} role="timer" aria-label="Time left">{formatTime(timeLeft)}</span>}
-        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner shows your similarity score with every other player. A dash means the two of you have not answered any question in common.</p></div>
+        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner compares your answers with every other player: the answers themselves after one shared question, a percentage after two or more.</p></div>
         :paused?<div className="center-idle"><Pause size={30}/><h2>Game paused</h2><p>The timer is stopped. Take a moment to talk, then press Resume.</p></div>
         :<div className="center-idle" key={rule}><span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'question':'questions'}</p></div>}
         <div className="center-actions">{ended?

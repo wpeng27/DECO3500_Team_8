@@ -2,7 +2,7 @@
 
 The 10 questions used by the shared-screen prototype (Version 6). Players draw one after playing an action card. Each question has four options and players choose one. Questions focus on study habits and teamwork, so matching answers point to people who may work well together in a group assignment.
 
-The prototype stores these in `QUESTIONS` in `Prototypes/icebreaker_UNO_Version6(shared_screen_Advanced)/lib/game.ts`. If you change a question here, change it there too.
+The topic names are also shown on the result screen (see below). The prototype stores these in `QUESTIONS` in `Prototypes/icebreaker_UNO_Version6(shared_screen_Advanced)/lib/game.ts`. If you change a question here, change it there too.
 
 | # | Topic | Question |
 |---|---|---|
@@ -10,11 +10,11 @@ The prototype stores these in `QUESTIONS` in `Prototypes/icebreaker_UNO_Version6
 | 2 | Preferred role | In a group project, which task would you happily pick up first? |
 | 3 | Working hours | When do you usually get uni work done? |
 | 4 | Communication | How do you prefer your group to communicate? |
-| 5 | Goals | What's your main goal for this course? |
+| 5 | Course goals | What's your main goal for this course? |
 | 6 | Unresponsive teammate | A teammate hasn't replied for 2 days and a deadline is close. You would… |
 | 7 | First tutorial | In your first tutorial, you'd most like to… |
 | 8 | Splitting work | Your group needs to split up the work. You'd prefer to… |
-| 9 | Standards | It's the night before the deadline and your part is about 80% done. You'd most likely… |
+| 9 | Before a deadline | It's the night before the deadline and your part is about 80% done. You'd most likely… |
 | 10 | Feedback | If a teammate found problems in your part, how would you like to hear about it? |
 
 ## How questions are drawn
@@ -63,7 +63,7 @@ How do you prefer your group to communicate?
 - C. Mostly face-to-face in tutorials
 - D. Shared doc, minimal chatting
 
-### 5. Goals
+### 5. Course goals
 What's your main goal for this course?
 
 - A. Aiming for a 7
@@ -95,7 +95,7 @@ Your group needs to split up the work. You'd prefer to…
 - C. Have one person assign the tasks
 - D. Pair up and split into halves
 
-### 9. Standards
+### 9. Before a deadline
 It's the night before the deadline and your part is about 80% done. You'd most likely…
 
 - A. Submit it — good enough is fine
@@ -115,4 +115,15 @@ If a teammate found problems in your part, how would you like to hear about it?
 
 - None of these questions has a "Prefer not to answer" option, so every answer counts towards similarity. Players who don't want to answer can press **Skip question**.
 - "Depends on the course" (Q1) and "Depends on how much it's worth" (Q9) are treated as ordinary answers. Two players who both choose them count as a match.
-- Similarity between two players is `same answers / questions both answered`.
+- Results depend on how many questions two players both answered:
+  - **0 shared:** a dash ("No shared question yet").
+  - **1 shared:** no percentage. The result shows the question's topic and both answers, labelled **Same** or **Different**. A single question can only give 0% or 100%, and with four options two people pick the same answer 25% of the time by chance, so a percentage would overstate it. Seeing the actual answers also gives players something to talk about.
+  - **2 or more shared:** a percentage, `(same answers + 1) / (shared questions + 2)`. Every pair starts at 50% and moves towards the real share of matching answers as more questions are shared, so a few answers can't produce an extreme score.
+
+| Shared questions | All same | Half same | None same |
+|---|---|---|---|
+| 2 | 75% | 50% | 25% |
+| 4 | 83% | 50% | 17% |
+| 10 | 92% | 50% | 8% |
+
+- In a 4-player, 10-minute game, simulations suggest about 1 in 3 pairs share exactly one question and about half share two or more, which is why the 1-question case gets its own display.
