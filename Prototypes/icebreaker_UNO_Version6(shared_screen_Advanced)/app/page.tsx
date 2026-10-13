@@ -2,7 +2,7 @@
 
 import {useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
-import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Shuffle,Sparkles,UserRound,X} from 'lucide-react';
+import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Sparkles,UserRound,X} from 'lucide-react';
 import {QUESTIONS,RULES,isOptOut} from '../lib/game';
 
 type Seat={name:string;email:string;guest:boolean};
@@ -14,20 +14,30 @@ const SEATS=[{pos:'tl',label:'Seat 1'},{pos:'tr',label:'Seat 2'},{pos:'bl',label
 const BASE_COLORS=['#7565F6','#11A78D','#E5A037','#E35675'];
 const EMPTY_HISTORIES=():AnswerHistory[]=>SEATS.map(()=>({}));
 
+const GAME_SECONDS=10*60;
+const QUESTIONS_PER_RULE=3;
+
 const ruleHelp:Record<string,string>={
-  'Normal UNO':'Play normal UNO with your real cards.',
-  'Hidden cards':'Do not look at your own cards. Ask the table to help you choose what to play.',
-  'Optional questions':'Ask someone a question if you want to talk. Asking and answering are both optional.',
-  'Give a card':'You may give one of your cards to another player.',
-  'Swap cards':'You may swap cards with another player if you both agree.',
+  'Normal UNO':'Standard UNO rules, with no extra rule.',
+  'Hidden cards':'Hold your cards facing out so you cannot see them. The other players help you choose what to play.',
+  'Optional questions':'Besides the action-card questions, anyone may ask another player a question out loud. Answering it is optional.',
+  'Give a card':'On your turn, you may also give one of your cards to another player.',
+  'Swap cards':'On your turn, you may swap one card with another player if that player agrees.',
 };
 
 const steps=[
-  ['Take a corner','Up to four players share this screen. Each corner is one seat.'],
-  ['Sign in or play as a Guest','Enter your email and preferred name, or continue as a Guest without sharing anything.'],
-  ['Play UNO with real cards','The circle in the middle shows the current rule. Anyone can pause the game or switch to a random rule.'],
-  ['Answer only when you want','Answers gradually shape each player colour. At the end, each corner reveals pair-by-pair match percentages.'],
+  ['Take a seat','Up to four people can play on this screen. Take one corner as your seat.'],
+  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details.'],
+  ['Play UNO with real cards','Play UNO with physical cards around the screen. The circle in the middle shows the time left and the current extra rule. Anyone can press Pause, which also stops the timer.'],
+  ['Draw a question after each action card','Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. When you play one, press Draw a question in your corner and read the question. Then either choose an answer and press Submit answer, or press Skip question if you would rather not answer.'],
+  ['How answers are used','When you and another player give the same answer to the same question, your corner colours move closer. Your similarity score with another player compares only the questions you have both answered.'],
+  ['Rules change automatically','The screen counts every question drawn at the table, answered or skipped. After every three, the extra rule changes automatically.'],
+  ['When does the game end?','The game lasts 10 minutes, starting when you press the button below. It ends when the timer reaches zero or when someone has no cards left, whichever comes first. If someone has no cards left, press Player out of cards. Each corner then shows your similarity scores with the other players.'],
 ];
+
+function formatTime(seconds:number){
+  return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+}
 
 function hexToRgb(hex:string):[number,number,number]{
   const value=parseInt(hex.slice(1),16);
@@ -115,8 +125,8 @@ function Brand(){
   return <div className="brand"><span className="brandmark">iB</span><span>Icebreaker <b>UNO</b></span></div>;
 }
 
-function Intro({onConfirm}:{onConfirm:()=>void}){
-  return <main className="intro"><Brand/><section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol><button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>Got it, let&apos;s start</button></section></main>;
+function Intro({onConfirm,inProgress}:{onConfirm:()=>void;inProgress:boolean}){
+  return <main className="intro"><Brand/><section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol><button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{inProgress?'Back to the game':<>Got it, let&apos;s start</>}</button></section></main>;
 }
 
 function MatchSummary({overall,matches,seats}:{overall:number|null;matches:MatchRow[];seats:(Seat|null)[]}){
@@ -134,13 +144,14 @@ function MatchSummary({overall,matches,seats}:{overall:number|null;matches:Match
   </section>;
 }
 
-function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history,matches,overall,allSeats}:{
+function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,color,history,matches,overall,allSeats}:{
   pos:string;
   label:string;
   seat:Seat|null;
   onSit:(seat:Seat)=>void;
   onLeave:()=>void;
   onAnswer:(questionIndex:number,optionIndex:number)=>void;
+  onSkip:()=>void;
   flash:{key:number;text:string}|null;
   ended:boolean;
   color:string;
@@ -157,8 +168,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
   const answerCount=Object.keys(history).length;
 
   function draw(){
-    let next=Math.floor(Math.random()*QUESTIONS.length);
-    if(QUESTIONS.length>1)while(next===question)next=Math.floor(Math.random()*QUESTIONS.length);
+    const next=Math.floor(Math.random()*QUESTIONS.length);
     setQuestion(next);
     setPicked(history[next]??null);
   }
@@ -166,6 +176,12 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
   function closeQuestion(){
     setQuestion(null);
     setPicked(null);
+  }
+
+  // A drawn question always ends as answered or skipped, so the table count stays honest.
+  function skipQuestion(){
+    onSkip();
+    closeQuestion();
   }
 
   function submitAnswer(){
@@ -199,14 +215,14 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,flash,ended,color,history
       </div>):<>
         <div className="seat-player"><span className="seat-avatar">{seat.guest?<UserRound size={18}/>:seat.name[0].toUpperCase()}</span><div><strong>{seat.name}</strong><span>{seat.guest?`Guest · ${label}`:`Signed in · ${label}`}</span><small className="colour-status"><i/>{answerCount?`${answerCount} ${answerCount===1?'answer':'answers'} shaping colour`:'Colour starts unique'}</small></div><button className="seat-leave" title="Leave this seat" aria-label="Leave this seat" onClick={leave}><LogOut size={14}/></button></div>
         {ended?<MatchSummary overall={overall} matches={matches} seats={allSeats}/>:<>
-          <button className="corner-draw" type="button" onClick={draw}><MessageCircleQuestion size={15}/>{q?'Draw another':'Draw a question'}</button>
+          {!q&&<button className="corner-draw" type="button" onClick={draw} title="Press after you play an action card"><MessageCircleQuestion size={15}/>Played an action card? Draw a question</button>}
           {q&&<div className="corner-question">
-            <button className="corner-question-close" type="button" aria-label="Close question" onClick={closeQuestion}><X size={14}/></button>
+            <button className="corner-question-close" type="button" aria-label="Skip question" title="Skip question" onClick={skipQuestion}><X size={14}/></button>
             <span className="question-badge">Question · Choose one</span><p>{q.text}</p>
             <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>setPicked(optionIndex)}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
             <div className="question-actions">
               <button className="primary" type="button" disabled={picked===null} onClick={submitAnswer}><Check size={14}/>Submit answer</button>
-              <button className="ghost" type="button" onClick={closeQuestion}>Skip question</button>
+              <button className="ghost" type="button" onClick={skipQuestion}>Skip question</button>
             </div>
           </div>}
         </>}
@@ -224,6 +240,11 @@ export default function Home(){
   const [histories,setHistories]=useState<AnswerHistory[]>(EMPTY_HISTORIES);
   const [sessionKey,setSessionKey]=useState(0);
   const [flash,setFlash]=useState<{seats:number[];key:number;text:string}|null>(null);
+  // The timer starts the first time players leave the rules screen and keeps going if they reopen it.
+  const [timerStarted,setTimerStarted]=useState(false);
+  const [timeLeft,setTimeLeft]=useState(GAME_SECONDS);
+  const [endReason,setEndReason]=useState<'time'|'cards'|null>(null);
+  const [tally,setTally]=useState({answered:0,skipped:0});
 
   useEffect(()=>{
     if(!flash)return;
@@ -231,11 +252,30 @@ export default function Home(){
     return()=>clearTimeout(timer);
   },[flash]);
 
+  useEffect(()=>{
+    if(!timerStarted||paused||ended)return;
+    const timer=setInterval(()=>setTimeLeft(left=>Math.max(0,left-1)),1000);
+    return()=>clearInterval(timer);
+  },[timerStarted,paused,ended]);
+
+  useEffect(()=>{
+    if(timerStarted&&timeLeft===0&&!ended)finishGame('time');
+  });
+
   const colors=evolvingColors(histories,seats);
+  const questionsDone=tally.answered+tally.skipped;
+  const untilNextRule=QUESTIONS_PER_RULE-questionsDone%QUESTIONS_PER_RULE;
+
+  // Answered and skipped questions share one table-wide count; every third one switches the rule.
+  function countQuestion(kind:'answered'|'skipped'){
+    setTally(current=>({...current,[kind]:current[kind]+1}));
+    if((questionsDone+1)%QUESTIONS_PER_RULE===0)randomRule();
+  }
 
   function answer(seatIndex:number,questionIndex:number,optionIndex:number){
     const matched=isOptOut(questionIndex,optionIndex)?[]:histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]===optionIndex?[peerIndex]:[]);
     setHistories(all=>all.map((history,index)=>index===seatIndex?{...history,[questionIndex]:optionIndex}:history));
+    countQuestion('answered');
     if(matched.length){
       const names=[seatIndex,...matched].map(index=>displayName(seats[index]!,index));
       setFlash(previous=>({seats:[seatIndex,...matched],key:(previous?.key??0)+1,text:`Answer match: ${names.join(' & ')} · colours moved closer`}));
@@ -252,9 +292,10 @@ export default function Home(){
     setRule(others[Math.floor(Math.random()*others.length)]);
   }
 
-  function finishGame(){
+  function finishGame(reason:'time'|'cards'){
     setPaused(false);
     setFlash(null);
+    setEndReason(reason);
     setEnded(true);
   }
 
@@ -264,10 +305,13 @@ export default function Home(){
     setRule(RULES[0]);
     setHistories(EMPTY_HISTORIES());
     setFlash(null);
+    setEndReason(null);
+    setTally({answered:0,skipped:0});
+    setTimeLeft(GAME_SECONDS);
     setSessionKey(key=>key+1);
   }
 
-  if(!started)return <Intro onConfirm={()=>setStarted(true)}/>;
+  if(!started)return <Intro inProgress={timerStarted} onConfirm={()=>{setStarted(true);setTimerStarted(true)}}/>;
 
   return <main className="table-page">
     <header className="table-header"><Brand/><button className="outline" onClick={()=>setStarted(false)}><Info size={16}/>Rules</button></header>
@@ -280,6 +324,7 @@ export default function Home(){
         onSit={value=>setSeat(index,value)}
         onLeave={()=>setSeat(index,null)}
         onAnswer={(questionIndex,optionIndex)=>answer(index,questionIndex,optionIndex)}
+        onSkip={()=>countQuestion('skipped')}
         flash={flash?.seats.includes(index)?flash:null}
         ended={ended}
         color={colors[index]}
@@ -290,14 +335,15 @@ export default function Home(){
       />)}
       <div className={`center-circle ${paused?'paused':''} ${ended?'ended':''}`}>
         <span className={`game-state ${paused?'paused':'live'} ${ended?'ended':''}`}><i/>{ended?'Results':paused?'Paused':'Playing'}</span>
-        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>Connections revealed</h2><p>Each corner shows pair-by-pair similarity. A percentage appears only when both people answered at least one of the same questions.</p></div>
-        :paused?<div className="center-idle"><Pause size={30}/><h2>Game paused</h2><p>Take a moment to talk. Resume when everyone is ready.</p></div>
-        :<div className="center-idle"><span className="uno-label">UNO</span><span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p></div>}
+        {!ended&&<span className={`game-timer ${timeLeft<=60?'low':''}`} role="timer" aria-label="Time left">{formatTime(timeLeft)}</span>}
+        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner shows your similarity score with every other player. A dash means the two of you have not answered any question in common.</p></div>
+        :paused?<div className="center-idle"><Pause size={30}/><h2>Game paused</h2><p>The timer is stopped. Take a moment to talk, then press Resume.</p></div>
+        :<div className="center-idle" key={rule}><span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'question':'questions'}</p></div>}
         <div className="center-actions">{ended?
           <button className="primary" onClick={playAgain}><RotateCcw size={16}/>Play again</button>
-          :<><button className="primary" onClick={()=>setPaused(!paused)}>{paused?<><Play size={16}/>Resume</>:<><Pause size={16}/>Pause</>}</button><button className="outline-light" onClick={randomRule} disabled={paused}><Shuffle size={16}/>Random rule</button><button className="outline-light finish-button" onClick={finishGame} disabled={seats.filter(Boolean).length<2}><Flag size={16}/>Finish game</button></>}
+          :<><button className="primary" onClick={()=>setPaused(!paused)}>{paused?<><Play size={16}/>Resume</>:<><Pause size={16}/>Pause</>}</button><button className="outline-light finish-button" onClick={()=>finishGame('cards')} disabled={seats.filter(Boolean).length<2} title="Press when someone has no cards left"><Flag size={16}/>Player out of cards</button></>}
         </div>
-        <small className="seat-count">{ended?'Percentages use shared questions, not private profile data.':`${seats.filter(Boolean).length} / 4 seats taken`}</small>
+        <small className="seat-count">{ended?'Percentages use shared questions, not private profile data.':`${seats.filter(Boolean).length} / 4 seats taken · ${tally.answered} answered · ${tally.skipped} skipped`}</small>
       </div>
     </div>
   </main>;
