@@ -192,18 +192,44 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .question-actions button{font-size:14px;padding:10px 14px}
 @media(max-width:900px){.corner-content:has(.corner-question){width:min(320px,90%)}.corner-question p{font-size:14px}.question-options button,.question-actions button{font-size:12px;padding:8px 9px}}
 @media(max-width:600px){.corner-content:has(.corner-question){width:100%}}
-/* Larger centre circle on wide screens (was up to 460px); narrow-screen sizes above are unchanged.
-   Corner cards are capped to the space left beside the circle so they never overlap it. */
+/* Wide screens (over 900px): larger centre circle and larger corner panels.
+   Circle text scales with the circle size so it always fits inside.
+   Corner panels are capped to the space left beside the circle (--room) so they never overlap it. */
 @media(min-width:901px){
-.radial-board{--circle:clamp(340px,40vw,560px)}
-.center-circle{width:var(--circle);padding:44px}
-.corner-content:has(.corner-question){width:min(400px,calc(50vw - var(--circle)/2 - 34px))}
-.corner-content.has-results{width:min(330px,calc(50vw - var(--circle)/2 - 34px))}
-.game-timer{font-size:52px}
-.center-idle .rule-name{font-size:28px}
-.center-idle p,.center-idle>p{font-size:16px}
-.center-idle .rule-next{font-size:14px}
-.center-actions button{font-size:16px;padding:12px 20px}
-.game-state{font-size:13px}
-.seat-count{font-size:13px}
+.radial-board{--circle:clamp(340px,40vw,560px);--room:calc(50vw - var(--circle)/2 - 34px)}
+.center-circle{width:var(--circle);padding:calc(var(--circle)*.07)}
+.game-timer{font-size:calc(var(--circle)*.12)}
+.center-idle .rule-name{font-size:calc(var(--circle)*.06)}
+.center-idle p,.center-idle>p{font-size:max(13px,calc(var(--circle)*.034))}
+.center-idle .rule-next{font-size:max(12px,calc(var(--circle)*.029))}
+.center-idle h2{font-size:calc(var(--circle)*.055)}
+.center-actions button{font-size:max(13px,calc(var(--circle)*.032));padding:.7em 1.2em}
+.game-state,.seat-count{font-size:max(12px,calc(var(--circle)*.026))}
+.seat-count{max-width:72%;text-wrap:balance}
+
+.corner-content{width:min(360px,var(--room))}
+.corner-content:has(.corner-question){width:min(460px,var(--room))}
+.corner-content.has-results{width:min(400px,var(--room))}
+.seat-label{font-size:14px}
+.seat-empty p{font-size:17px}
+.seat-actions button{font-size:15px;padding:11px 16px}
+.seat-form label{font-size:14px}
+.seat-form input{font-size:16px;padding:10px 12px}
+.seat-avatar{width:52px;height:52px;font-size:20px}
+.seat-player strong{font-size:26px}
+.seat-player>div>span{font-size:18px}
+.colour-status{font-size:17px!important}
+.corner-draw{font-size:15px;padding:10px 14px}
+.question-badge{font-size:13px}
+.corner-question p{font-size:18px}
+.question-options button{font-size:15px;padding:11px 12px}
+.question-actions button{font-size:15px;padding:11px 14px}
+.flash-banner{font-size:15px}
+.match-summary{padding:14px 16px;gap:10px}
+.match-overall span{font-size:13px}
+.match-overall strong{font-size:30px}
+.match-explainer{font-size:13px}
+.match-row strong{font-size:15px}
+.match-row div span{font-size:12px}
+.match-row>b{font-size:17px}
 }
