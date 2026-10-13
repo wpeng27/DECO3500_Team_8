@@ -4,6 +4,7 @@ function rgbToHex(r:number,g:number,b:number){return '#'+[r,g,b].map(v=>Math.rou
 export function blendInterestColor(tags:string[]):string{const cols=tags.map(t=>INTERESTS.find(i=>i.id===t)?.color).filter((c):c is string=>!!c);if(!cols.length)return '#8893a8';const sum=cols.reduce((acc,hex)=>{const [r,g,b]=hexToRgb(hex);return [acc[0]+r,acc[1]+g,acc[2]+b]},[0,0,0]);return rgbToHex(sum[0]/cols.length,sum[1]/cols.length,sum[2]/cols.length)}
 // Question bank for the shared-screen game (10 questions, 4 options each).
 // `topic` is a short label shown on the result panel when two players share only one question.
+// `complementary` questions count different answers as a match: a team needs people who pick up different tasks.
 // `tags` are only read by the earlier server version (app/api/game/route.ts); a null tag would mark an opt-out option.
 export const QUESTIONS=[
   {topic:'Starting early',
@@ -11,6 +12,7 @@ export const QUESTIONS=[
     options:["Already started a draft","Made a plan but not started","Not started — I work best close to deadlines","Depends on the course"],
     tags:['games','sport','art','food']},
   {topic:'Preferred role',
+    complementary:true,
     text:"In a group project, which task would you happily pick up first?",
     options:["Building / coding","Research & writing","Visual design","Presenting & coordinating"],
     tags:['games','sport','art','food']},
@@ -49,7 +51,9 @@ export const QUESTIONS=[
 ];
 // A null tag marks an opt-out answer such as 'Prefer not to answer': it never counts as a match.
 export const isOptOut=(question:number,option:number)=>QUESTIONS[question]?.tags[option]===null;
-export const RULES=['Normal UNO','Hidden cards','Optional questions','Give a card','Swap cards'];
+// Two answers to the same question match when they are the same, or different on a complementary question.
+export const isMatch=(question:number,a:number,b:number)=>QUESTIONS[question]?.complementary?a!==b:a===b;
+export const RULES=['Normal UNO','Hidden cards','Pick a player','Give a card','Swap cards'];
 export type Player={id:string;tokenHash:string;name:string;guest:boolean;demo:boolean;tags:string[];category:string;bandColor:string;tableId:string;status:'seated'|'waiting'|'left';hand:number;score:number|null;visibleScore:number|null;pending:boolean;moveTo?:string;lastMatch:{at:number;withName:string}|null};
 export type Prompt={id:string;originalTarget:string;target:string;question:number;status:'open'|'answered'|'passed'|'expired';invited:boolean;createdRound:number};
 export type Table={id:string;name:string;capacity:number;phase:'lobby'|'playing'|'transition'|'tea'|'ended';round:number;direction:1|-1;current:string|null;done:string[];promptUsed:boolean;prompt:Prompt|null;rule:string;conversation:boolean;teaRequested:boolean;responses:string[];winner:string|null};

@@ -7,7 +7,7 @@ The topic names are also shown on the result screen (see below). The prototype s
 | # | Topic | Question |
 |---|---|---|
 | 1 | Starting early | It's 3 weeks before a group assignment is due. Usually, you've… |
-| 2 | Preferred role | In a group project, which task would you happily pick up first? |
+| 2 | Preferred role (complementary) | In a group project, which task would you happily pick up first? |
 | 3 | Working hours | When do you usually get uni work done? |
 | 4 | Communication | How do you prefer your group to communicate? |
 | 5 | Course goals | What's your main goal for this course? |
@@ -19,7 +19,7 @@ The topic names are also shown on the result screen (see below). The prototype s
 
 ## How questions are drawn
 
-1. **When to draw.** Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. The player who plays one presses **Played an action card? Draw a question** in their own corner. Only that player answers.
+1. **When to draw.** Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. The player who plays one presses **Played an action card? Draw a question** in their own corner. Only that player answers. While the **Pick a player** rule is active, a player can also pick someone else on their turn, and the picked player draws and answers a question the same way. Questions can only be drawn after someone presses **Start game**.
 2. **Which question comes up.** The screen picks it, not pure chance:
    - It is always a question this player has **not answered yet**, so an earlier answer is never overwritten.
    - Among those, it prefers the question **the most other seated players have already answered**. If several are tied, one of them is picked at random.
@@ -39,8 +39,10 @@ It's 3 weeks before a group assignment is due. Usually, you've…
 - C. Not started — I work best close to deadlines
 - D. Depends on the course
 
-### 2. Preferred role
+### 2. Preferred role (complementary)
 In a group project, which task would you happily pick up first?
+
+*Complementary question: two players match when they choose **different** options, because a team needs people who take on different tasks.*
 
 - A. Building / coding
 - B. Research & writing
@@ -115,12 +117,13 @@ If a teammate found problems in your part, how would you like to hear about it?
 
 - None of these questions has a "Prefer not to answer" option, so every answer counts towards similarity. Players who don't want to answer can press **Skip question**.
 - "Depends on the course" (Q1) and "Depends on how much it's worth" (Q9) are treated as ordinary answers. Two players who both choose them count as a match.
+- **Matching answers.** On every question except Q2, two answers match when they are the same. Q2 (Preferred role) is complementary: two answers match when they are different. This is set with `complementary:true` in `lib/game.ts`.
 - Results depend on how many questions two players both answered:
   - **0 shared:** a dash ("No shared question yet").
-  - **1 shared:** no percentage. The result shows the question's topic and both answers, labelled **Same** or **Different**. A single question can only give 0% or 100%, and with four options two people pick the same answer 25% of the time by chance, so a percentage would overstate it. Seeing the actual answers also gives players something to talk about.
-  - **2 or more shared:** a percentage, `(same answers + 1) / (shared questions + 2)`. Every pair starts at 50% and moves towards the real share of matching answers as more questions are shared, so a few answers can't produce an extreme score.
+  - **1 shared:** no percentage. The result shows the question's topic and both answers, labelled **Same** or **Different** (for Q2: **Complementary** or **Same role**). A single question can only give 0% or 100%, and with four options two people pick the same answer 25% of the time by chance, so a percentage would overstate it. Seeing the actual answers also gives players something to talk about.
+  - **2 or more shared:** a percentage, `(matching answers + 1) / (shared questions + 2)`. Every pair starts at 50% and moves towards the real share of matching answers as more questions are shared, so a few answers can't produce an extreme score.
 
-| Shared questions | All same | Half same | None same |
+| Shared questions | All match | Half match | None match |
 |---|---|---|---|
 | 2 | 75% | 50% | 25% |
 | 4 | 83% | 50% | 17% |

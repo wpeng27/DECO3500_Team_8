@@ -196,7 +196,7 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
    Circle text scales with the circle size so it always fits inside.
    Corner panels are capped to the space left beside the circle (--room) so they never overlap it. */
 @media(min-width:901px){
-.radial-board{--circle:clamp(380px,35vw,480px);--room:calc(50vw - var(--circle)/2 - 34px)}
+.radial-board{--circle:clamp(410px,35vw,480px);--room:calc(50vw - var(--circle)/2 - 44px)}
 .center-circle{width:var(--circle);padding:calc(var(--circle)*.07);gap:calc(var(--circle)*.024)}
 .center-idle h2{margin:calc(var(--circle)*.02) 0}
 .game-timer{font-size:calc(var(--circle)*.12)}
@@ -241,3 +241,27 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .match-row>b.alike,.match-row>b.differ{font-size:.85em;padding:3px 8px;border-radius:99px;align-self:start}
 .match-row>b.alike{background:#11a78d40;color:#8ef0d2}
 .match-row>b.differ{background:#f0a23b33;color:#ffd28a}
+/* Seat border keeps the seat's original colour; only the inside blends with matching players */
+.radial-board .corner{box-shadow:inset 0 0 0 10px var(--base-color,transparent);padding:28px}
+@media(max-width:900px){.radial-board .corner{box-shadow:inset 0 0 0 6px var(--base-color,transparent);padding:20px}}
+.corner-waiting{margin:0;font-size:13px;color:#e2e7f4;opacity:.85}
+@media(min-width:901px){.corner-waiting{font-size:15px}}
+
+/* Before the game starts */
+.game-state.ready i{background:#8f9bb6}
+.start-button{font-weight:700}
+
+/* Rule change notice: a brief full-board flash, a banner for each side of the table and a glowing circle */
+.rule-flash{position:absolute;inset:0;z-index:4;background:#ffffff;pointer-events:none;animation:rule-flash 1.2s ease forwards}
+@keyframes rule-flash{0%{opacity:0}15%{opacity:.45}100%{opacity:0}}
+.rule-banner{position:absolute;left:50%;z-index:5;max-width:min(90%,var(--circle,320px));padding:10px 18px;border-radius:999px;background:#fff;color:#17213d;font-weight:800;font-size:clamp(14px,1.3vw,20px);text-align:center;box-shadow:0 6px 24px #0006;pointer-events:none;animation:rule-banner-out .4s ease 3.6s forwards}
+.rule-banner-bottom{top:calc(50% + var(--circle,300px)/2 + 18px);transform:translateX(-50%)}
+.rule-banner-top{bottom:calc(50% + var(--circle,300px)/2 + 18px);transform:translateX(-50%) rotate(180deg)}
+@keyframes rule-banner-out{to{opacity:0}}
+.center-circle.rule-changed{animation:rule-glow 1.3s ease 3}
+@keyframes rule-glow{0%,100%{box-shadow:0 10px 40px #0006,0 0 0 0 #ffffff00}50%{box-shadow:0 10px 40px #0006,0 0 0 14px #ffffff66}}
+.rule-changed-chip{display:inline-block;margin-bottom:6px;padding:4px 12px;border-radius:999px;background:#fff;color:#17213d;font-size:max(12px,calc(var(--circle,300px)*.028));font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+@media(max-width:600px){.rule-banner{display:none}}
+@media(prefers-reduced-motion:reduce){.rule-flash{display:none}.center-circle.rule-changed{animation:none;box-shadow:0 10px 40px #0006,0 0 0 8px #ffffff66}.rule-banner{animation-timing-function:steps(1,end)}}
+.center-circle.rule-changed .rule-next{display:none}
+@media(min-width:901px){.center-idle p,.center-idle>p{line-height:1.45}}
