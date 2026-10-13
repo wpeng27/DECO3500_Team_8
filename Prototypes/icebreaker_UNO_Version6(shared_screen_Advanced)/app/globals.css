@@ -192,3 +192,18 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .question-actions button{font-size:14px;padding:10px 14px}
 @media(max-width:900px){.corner-content:has(.corner-question){width:min(320px,90%)}.corner-question p{font-size:14px}.question-options button,.question-actions button{font-size:12px;padding:8px 9px}}
 @media(max-width:600px){.corner-content:has(.corner-question){width:100%}}
+/* Larger centre circle on wide screens (was up to 460px); narrow-screen sizes above are unchanged.
+   Corner cards are capped to the space left beside the circle so they never overlap it. */
+@media(min-width:901px){
+.radial-board{--circle:clamp(340px,40vw,560px)}
+.center-circle{width:var(--circle);padding:44px}
+.corner-content:has(.corner-question){width:min(400px,calc(50vw - var(--circle)/2 - 34px))}
+.corner-content.has-results{width:min(330px,calc(50vw - var(--circle)/2 - 34px))}
+.game-timer{font-size:52px}
+.center-idle .rule-name{font-size:28px}
+.center-idle p,.center-idle>p{font-size:16px}
+.center-idle .rule-next{font-size:14px}
+.center-actions button{font-size:16px;padding:12px 20px}
+.game-state{font-size:13px}
+.seat-count{font-size:13px}
+}
