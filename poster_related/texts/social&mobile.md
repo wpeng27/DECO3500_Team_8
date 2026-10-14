@@ -10,7 +10,7 @@ Turn-taking, shared rules and pause controls help players coordinate their actio
 
 ### 3. Optional Conversation
 
-Players can draw a question, answer briefly, change it or skip it. Technology invites conversation without forcing personal disclosure.
+Players can draw a question, choose an answer or skip it. Technology invites conversation without forcing personal disclosure.
 
 ### 4. Awareness & Shared Ground
 
@@ -48,4 +48,4 @@ The experience supports a short tutorial-session interaction rather than creatin
 
 ### 5. Public–Private Balance
 
-Game rules and shared progress remain public, while players control whether they answer, change or skip a question.
+Game rules and shared progress remain public, while players control whether they answer or skip a question.
