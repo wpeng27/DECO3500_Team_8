@@ -2,10 +2,14 @@
 
 import {useEffect,useState,useSyncExternalStore} from 'react';
 import type {CSSProperties} from 'react';
-import {Check,Download,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Sparkles,Trash2,UserRound,X} from 'lucide-react';
+import {Check,Download,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Smartphone,Sparkles,Trash2,UserRound,X} from 'lucide-react';
 import {QUESTIONS,RULES,isMatch,isOptOut} from '../lib/game';
 import {clearLog,downloadCsv,readLog,saveRows} from '../lib/participation';
 import type {ParticipationRow} from '../lib/participation';
+import {mobileCommandError,mobileId} from '../lib/mobile';
+import type {MobileCommand,MobileMatch,MobileSnapshot,OpenQuestion} from '../lib/mobile';
+import {useMobileHost} from '../hooks/use-mobile-host';
+import {MobileInvite} from '../components/mobile-invite';
 
 type Seat={name:string;email:string;guest:boolean};
 type AnswerHistory=Record<number,number>;
@@ -30,7 +34,7 @@ const ruleHelp:Record<string,string>={
 };
 
 const steps=[
-  ['Take a seat','Up to four people can play on this screen. Take one corner as your seat.'],
+  ['Take a seat','Up to four people can play. Take one corner as your seat, or open the Mobile screens link on a phone connected to the same Wi-Fi and choose a free seat there.'],
   ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details. Your email is only used to record who took part in the game, and is not used for anything else.'],
   ['Start the game','Once at least two players are seated, press Start game in the circle in the middle. This starts the 10-minute timer.'],
   ['Play UNO with real cards','Play UNO with physical cards around the screen. The circle in the middle shows the time left and the current extra rule. Anyone can press Pause, which also stops the timer.'],
@@ -171,7 +175,7 @@ function RulesCard({onConfirm,confirmLabel}:{onConfirm:()=>void;confirmLabel:str
   }
 
   return <section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol>
-    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are saved on this device to record who took part in the game. They are only used for that record, not for anything else, and are not sent anywhere. Choose Continue as Guest if you would rather not share them.</p></aside>
+    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are saved on this PC to record who took part in the game. Mobile sign-in sends these details through the PC server to join your seat; your email is never shown to other players. When mobile screens are enabled, player names, colours and open questions are shared with connected phones. Choose Continue as Guest if you would rather not share your details.</p></aside>
     <button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{confirmLabel}</button>
     {recordCount!==null&&<div className="intro-records">
       <span>For the test team: {recordCount} participation {recordCount===1?'record':'records'} saved on this device.</span>
@@ -225,7 +229,7 @@ function MatchSummary({overall,matches,seats}:{overall:number|null;matches:Match
   </section>;
 }
 
-function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playing,paused,rule,color,baseColor,history,peerHistories,matches,overall,allSeats}:{
+function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,flash,ended,playing,paused,rule,color,baseColor,history,matches,overall,allSeats}:{
   pos:string;
   label:string;
   seat:Seat|null;
@@ -233,6 +237,8 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
   onLeave:()=>void;
   onAnswer:(questionIndex:number,optionIndex:number)=>void;
   onSkip:()=>void;
+  onDraw:()=>void;
+  question:OpenQuestion|null;
   flash:{key:number;text:string}|null;
   ended:boolean;
   playing:boolean;
@@ -241,7 +247,6 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
   color:string;
   baseColor:string;
   history:AnswerHistory;
-  peerHistories:AnswerHistory[];
   matches:MatchRow[];
   overall:number|null;
   allSeats:(Seat|null)[];
@@ -249,55 +254,33 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
   const [signingIn,setSigningIn]=useState(false);
   const [email,setEmail]=useState('');
   const [name,setName]=useState('');
-  const [question,setQuestion]=useState<number|null>(null);
-  const [picked,setPicked]=useState<number|null>(null);
+  const [selection,setSelection]=useState<{questionId:string;option:number}|null>(null);
+  const picked=selection?.questionId===question?.id?selection?.option??null:null;
   const [confirmLeave,setConfirmLeave]=useState(false);
   const answerCount=Object.keys(history).length;
   const unanswered=QUESTIONS.map((_,index)=>index).filter(index=>history[index]===undefined);
 
-  // Prefer questions you have not answered that the most other players have, so every pair
-  // builds up shared answers and the similarity score has something to compare.
-  // Only unanswered questions are drawn, so an answer can never be changed later to chase a score.
-  function draw(){
-    const candidates=unanswered;
-    if(!candidates.length)return;
-    const answeredByOthers=(index:number)=>peerHistories.filter(peer=>peer[index]!==undefined&&!isOptOut(index,peer[index])).length;
-    const best=Math.max(...candidates.map(answeredByOthers));
-    const top=candidates.filter(index=>answeredByOthers(index)===best);
-    const next=top[Math.floor(Math.random()*top.length)];
-    setQuestion(next);
-    setPicked(history[next]??null);
-  }
-
-  function closeQuestion(){
-    setQuestion(null);
-    setPicked(null);
-  }
-
   // A drawn question always ends as answered or skipped, so the table count stays honest.
   function skipQuestion(){
     onSkip();
-    closeQuestion();
   }
 
   function submitAnswer(){
     if(question===null||picked===null)return;
-    onAnswer(question,picked);
-    closeQuestion();
+    onAnswer(question.index,picked);
   }
 
   // Leaving clears this player's answers, so it takes a second press to confirm.
   function leave(){
     if(!confirmLeave){setConfirmLeave(true);return;}
     setConfirmLeave(false);
-    setQuestion(null);
-    setPicked(null);
+    setSelection(null);
     setEmail('');
     setName('');
     onLeave();
   }
 
-  const q=question===null?null:QUESTIONS[question];
+  const q=question===null?null:QUESTIONS[question.index];
   // The inside follows the evolving colour; the border keeps the seat's own colour so seats stay recognisable.
   const cornerStyle={'--player-color':color,'--base-color':baseColor} as CSSProperties;
 
@@ -318,12 +301,12 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
           {!q&&(!playing?<p className="corner-waiting">Questions start when the game starts.</p>
             :paused?<p className="corner-waiting">Game paused. Questions come back when you press Resume.</p>
             :!unanswered.length?<p className="corner-waiting">You have answered every question.</p>
-            :<button className="corner-draw" type="button" onClick={draw} title="Press after you play an action card, or when another player picks you"><MessageCircleQuestion size={15}/>{rule==='Pick a player'?'Played an action card or picked? Draw a question':'Played an action card? Draw a question'}</button>
+            :<button className="corner-draw" type="button" onClick={onDraw} title="Press after you play an action card, or when another player picks you"><MessageCircleQuestion size={15}/>{rule==='Pick a player'?'Played an action card or picked? Draw a question':'Played an action card? Draw a question'}</button>
             )}
           {q&&<div className="corner-question">
             <button className="corner-question-close" type="button" aria-label="Skip question" title="Skip question" onClick={skipQuestion}><X size={14}/></button>
             <span className="question-badge">Question · Choose one</span><p>{q.text}</p>
-            <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>setPicked(optionIndex)}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
+            <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>question&&setSelection({questionId:question.id,option:optionIndex})}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
             <div className="question-actions">
               <button className="primary" type="button" disabled={picked===null} onClick={submitAnswer}><Check size={14}/>Submit answer</button>
               <button className="ghost" type="button" onClick={skipQuestion}>Skip question</button>
@@ -338,6 +321,11 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,flash,ended,playin
 export default function Home(){
   const [started,setStarted]=useState(false);
   const [seats,setSeats]=useState<(Seat|null)[]>([null,null,null,null]);
+  const [seatIds,setSeatIds]=useState<string[]>(SEATS.map(()=>''));
+  const [seatRevisions,setSeatRevisions]=useState<number[]>(SEATS.map(()=>0));
+  const [openQuestions,setOpenQuestions]=useState<(OpenQuestion|null)[]>(SEATS.map(()=>null));
+  const [mobileMatches,setMobileMatches]=useState<(MobileMatch|null)[]>(SEATS.map(()=>null));
+  const [showMobile,setShowMobile]=useState(false);
   const [paused,setPaused]=useState(false);
   const [ended,setEnded]=useState(false);
   const [rule,setRule]=useState(RULES[0]);
@@ -388,6 +376,19 @@ export default function Home(){
   const seatedCount=seats.filter(Boolean).length;
   const playing=gameStarted&&!ended;
   const untilNextRule=QUESTIONS_PER_RULE-tally.answered%QUESTIONS_PER_RULE;
+  // Public snapshots exclude emails. Private mobile sign-in details arrive through host commands.
+  const mobileSnapshot:MobileSnapshot={
+    status:ended?'ended':!gameStarted?'ready':paused?'paused':'playing',rule,timeLeft,
+    availableSeats:SEATS.flatMap((seat,index)=>!seats[index]?[{
+      seatIndex:index,label:seat.label,baseColour:BASE_COLORS[index],revision:seatRevisions[index],
+    }]:[]),
+    players:seats.flatMap((seat,index)=>seat?[{
+      id:seatIds[index],seatIndex:index,name:displayName(seats,index),colour:colors[index],baseColour:BASE_COLORS[index],
+      answered:Object.keys(histories[index]).length,complete:Object.keys(histories[index]).length===QUESTIONS.length,
+      question:openQuestions[index],match:mobileMatches[index],
+    }]:[]),
+  };
+  const mobile=useMobileHost(mobileSnapshot,handleMobileCommand);
 
   // Keep the screen awake during play: nobody touches the laptop during UNO, and a sleeping
   // screen would hide the game. Browsers drop the lock when the tab is hidden, so ask again on return.
@@ -461,23 +462,74 @@ export default function Home(){
   }
 
   function answer(seatIndex:number,questionIndex:number,optionIndex:number){
+    if(!playing||!seats[seatIndex]||openQuestions[seatIndex]?.index!==questionIndex||histories[seatIndex][questionIndex]!==undefined||!QUESTIONS[questionIndex]?.options[optionIndex])return;
+    setOpenQuestions(all=>all.map((question,index)=>index===seatIndex?null:question));
     const matched=isOptOut(questionIndex,optionIndex)?[]:histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]!==undefined&&!isOptOut(questionIndex,history[questionIndex])&&isMatch(questionIndex,optionIndex,history[questionIndex])?[peerIndex]:[]);
     setHistories(all=>all.map((history,index)=>index===seatIndex?{...history,[questionIndex]:optionIndex}:history));
     countQuestion('answered');
     updateSeatRow(seatIndex,row=>({...row,answered:row.answered+1}));
     if(matched.length){
       const names=[seatIndex,...matched].map(index=>displayName(seats,index));
-      setFlash(previous=>({seats:[seatIndex,...matched],key:(previous?.key??0)+1,text:`${QUESTIONS[questionIndex].complementary?'Complementary roles':'Answer match'}: ${names.join(' & ')} · colours moved closer`}));
+      const text=`${QUESTIONS[questionIndex].complementary?'Complementary roles':'Answer match'}: ${names.join(' & ')} · colours moved closer`;
+      const match={id:mobileId(),text};
+      // A durable event ID survives polling and belongs to every player in this match.
+      setMobileMatches(all=>all.map((current,index)=>index===seatIndex||matched.includes(index)?match:current));
+      setFlash(previous=>({seats:[seatIndex,...matched],key:(previous?.key??0)+1,text}));
     }
   }
 
   function setSeat(index:number,seat:Seat|null){
+    if(seat&&seats[index])return;
     if(playing&&currentGame){
       if(seat)setGameLog(rows=>[...rows,newRow(currentGame,index,seat)]);
       else updateSeatRow(index,row=>({...row,leftAt:stamp()}));
     }
     setSeats(all=>all.map((current,currentIndex)=>currentIndex===index?seat:current));
+    setSeatRevisions(all=>all.map((revision,currentIndex)=>currentIndex===index?revision+1:revision));
+    setSeatIds(all=>all.map((id,currentIndex)=>currentIndex===index?(seat?mobileId():''):id));
+    setOpenQuestions(all=>all.map((question,currentIndex)=>currentIndex===index?null:question));
+    setMobileMatches(all=>all.map((match,currentIndex)=>currentIndex===index?null:match));
     if(!seat)setHistories(all=>all.map((history,currentIndex)=>currentIndex===index?{}:history));
+  }
+
+  function drawQuestion(seatIndex:number){
+    if(!playing||paused||!seats[seatIndex]||openQuestions[seatIndex])return;
+    const candidates=QUESTIONS.map((_,index)=>index).filter(index=>histories[seatIndex][index]===undefined);
+    if(!candidates.length)return;
+    // Preserve the existing preference for questions already answered by peers.
+    const answeredByOthers=(index:number)=>histories.filter((history,peer)=>peer!==seatIndex&&seats[peer]&&history[index]!==undefined&&!isOptOut(index,history[index])).length;
+    const best=Math.max(...candidates.map(answeredByOthers));
+    const top=candidates.filter(index=>answeredByOthers(index)===best);
+    const question={id:mobileId(),index:top[Math.floor(Math.random()*top.length)]};
+    setOpenQuestions(all=>all.map((current,index)=>index===seatIndex?question:current));
+  }
+
+  function skipQuestion(seatIndex:number){
+    if(!playing||!seats[seatIndex]||!openQuestions[seatIndex])return;
+    setOpenQuestions(all=>all.map((question,index)=>index===seatIndex?null:question));
+    countQuestion('skipped');
+    updateSeatRow(seatIndex,row=>({...row,skipped:row.skipped+1}));
+  }
+
+  function handleMobileCommand(command:MobileCommand):string|null{
+    const error=mobileCommandError(mobileSnapshot,command);
+    if(error)return error;
+    if(command.kind==='join'){
+      setSeat(command.seatIndex,command.identity);
+      return null;
+    }
+    const index=seatIds.indexOf(command.playerId);
+    if(command.kind==='draw'){
+      drawQuestion(index);
+      return null;
+    }
+    const question=openQuestions[index]!;
+    if(command.kind==='skip')skipQuestion(index);
+    else{
+      if(command.option===undefined||!QUESTIONS[question.index]?.options[command.option])return 'Choose a valid answer.';
+      answer(index,question.index,command.option);
+    }
+    return null;
   }
 
   function randomRule(){
@@ -499,6 +551,10 @@ export default function Home(){
   }
 
   function playAgain(){
+    setSeatIds(seats.map(seat=>seat?mobileId():''));
+    setSeatRevisions(all=>all.map(revision=>revision+1));
+    setOpenQuestions(SEATS.map(()=>null));
+    setMobileMatches(SEATS.map(()=>null));
     setEnded(false);
     setPaused(false);
     setRule(RULES[0]);
@@ -518,7 +574,8 @@ export default function Home(){
   if(!started)return <Intro onConfirm={()=>setStarted(true)}/>;
 
   return <main className="table-page">
-    <header className="table-header"><Brand/><button className="outline" onClick={()=>setShowRules(true)}><Info size={16}/>Rules</button></header>
+    <header className="table-header"><Brand/><div className="table-header-actions"><button className="outline" aria-expanded={showMobile} onClick={()=>{mobile.enable();setShowMobile(value=>!value);}}><Smartphone size={16}/>Mobile screens</button><button className="outline" onClick={()=>setShowRules(true)}><Info size={16}/>Rules</button></div></header>
+    {showMobile&&mobile.code&&<MobileInvite code={mobile.code} status={mobile.status}/>}
     {showRules&&<RulesOverlay onClose={()=>setShowRules(false)}/>}
     <div className={`radial-board ${ended?'game-ended':''}`}>
       {SEATS.map((seat,index)=><Corner
@@ -529,7 +586,9 @@ export default function Home(){
         onSit={value=>setSeat(index,value)}
         onLeave={()=>setSeat(index,null)}
         onAnswer={(questionIndex,optionIndex)=>answer(index,questionIndex,optionIndex)}
-        onSkip={()=>{countQuestion('skipped');updateSeatRow(index,row=>({...row,skipped:row.skipped+1}));}}
+        onSkip={()=>skipQuestion(index)}
+        onDraw={()=>drawQuestion(index)}
+        question={openQuestions[index]}
         flash={flash?.seats.includes(index)?flash:null}
         ended={ended}
         playing={playing}
@@ -538,7 +597,6 @@ export default function Home(){
         color={colors[index]}
         baseColor={BASE_COLORS[index]}
         history={histories[index]}
-        peerHistories={histories.filter((_,peerIndex)=>peerIndex!==index&&seats[peerIndex])}
         matches={matchRowsFor(index,histories,seats)}
         overall={overallMatch(index,histories,seats)}
         allSeats={seats}

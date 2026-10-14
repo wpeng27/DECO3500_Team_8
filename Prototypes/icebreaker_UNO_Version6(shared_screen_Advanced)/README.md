@@ -1,6 +1,6 @@
 # Icebreaker UNO
 
-A shared-screen icebreaker for up to four players. Everyone sits around one screen and plays UNO with real cards. The screen shows each player's seat, the questions players draw after action cards, a 10-minute countdown and the current extra rule.
+A shared-screen icebreaker for up to four players, with optional mobile player screens on the same network. Everyone plays UNO with real cards. The PC shows the table, countdown and extra rule; phones can switch between seated players, show their live colours, and draw, answer or skip questions.
 
 ## How it works
 
@@ -49,7 +49,7 @@ The app keeps a log of who took part, so the team can see who has used the syste
 
 - **What is recorded:** one row per person per game, with the game ID, when the game started and ended, why it ended, the seat, the preferred name (or "Guest"), the email (signed-in players only), whether they played as a guest, when they joined, whether and when they left early, and how many questions they answered and skipped.
 - **When:** rows are created when someone presses **Start game** (for everyone seated) or when someone sits down during a game, and are updated as they answer, skip, leave or the game ends. A player who leaves and someone who takes the seat afterwards get separate rows.
-- **Where:** in this browser's `localStorage` on this device only. Nothing is sent to a server, so no database is needed.
+- **Where:** participation records are saved in the PC browser's `localStorage`. Mobile sign-in sends the preferred name and email to the PC through a private queued request on its local server; the request is removed when the PC acknowledges it. Only authenticated PC updates can retrieve queued sign-in details. Public mobile snapshots and receipts never include emails or participation records. Player display names, colours, open questions and game status are shared with connected phones.
 - **Export:** at the bottom of the rules screen (also available from the **Rules** button during a game), **Download CSV** saves `icebreaker-participants-YYYY-MM-DD.csv`, which opens in Excel. **Clear records** deletes the log after a second click to confirm.
 - **Unfinished games:** rows whose game never ended (still running, or the page was closed or refreshed) are exported with the end reason "Not finished (still playing, or page closed)".
 - **Privacy:** the rules screen and the sign-in form tell players that their email is only used to record who took part in the game and not for anything else. Players who prefer not to share an email can continue as a guest.
@@ -61,10 +61,37 @@ Use Node.js 22.13 or later and npm. In the project folder, run:
 ```sh
 npm run install:ci
 npm run build
+npm run db:migrate:local
 npm run dev
 ```
 
 Then open http://localhost:5173/. If port 5173 is already in use, run `npm run dev -- --port 5174` and open that port instead.
+
+`db:migrate:local` creates the mobile connection table in the local D1 database. It is safe to run again and does not change the older game table. Run it after the first build, before using mobile screens. For a built local server, use `npm start -- --port 5173` after building and migrating; both server modes listen on the local network.
+
+## Connect mobile screens
+
+1. Connect the PC and phones to the same Wi-Fi/LAN. Open the game on the PC and continue past the rules screen. Players can take their seats from their own phones.
+2. On the PC, click **Mobile screens** in the header. This creates a separate connection for this table; another PC browser tab gets its own link.
+3. Replace `localhost` in **PC network address** with the PC's LAN IPv4 address (for example `192.168.1.25`). Find it with `ipconfig` in PowerShell under the active Wi-Fi/Ethernet adapter, or in the dev server's printed **Network** URL.
+4. Copy the generated link and open it in the phone's browser. It looks like `http://192.168.1.25:5173/mobile?room=...`. The room part is required. No installation is needed.
+5. Choose a free coloured seat on the phone. Enter a preferred name and email and press **Sign in**, or press **Continue as Guest** without entering details. The player appears on the PC automatically and the phone selects the joined seat. **Join this table** reopens the form when more seats are free. Simultaneous claims cannot overwrite an occupied seat; choose another free seat if someone gets there first.
+6. Each occupied seat appears as a player button. Switch between them to show that player's current colour and question controls. The shared table supports four seats; two seated players produce two player buttons and four produce four. Free seats are listed separately in the sign-in form.
+7. Start the game on the PC once at least two players are seated. Draw, answer or skip on either screen. An open question is shared between devices; repeated submissions are handled once. Colour changes, pause/resume, players leaving, game end and new rounds update automatically (normally within about 1–2 seconds).
+
+The mobile panel uses the same colour blend as the PC corner, with the original seat colour around its border. Phones can control any player through the tabs. Sign-in and guest seating work on either device, including during play or a pause; participation records use the same PC logging as before. Game start/pause/end, leaving seats, results and participation exports remain on the PC. New players wait until the next round if the game has finished.
+
+**Match alerts:** tap **Enable sound & vibration** on each phone once. It plays a short test chime and vibrates where supported. When the selected player is involved in a new answer match (including complementary roles), the phone plays the chime, gives two short vibrations and shows a match message with a gentle border pulse. Both matching players' phones can receive the alert, even when the answer was submitted on the PC. **Mute alerts** turns off sound and vibration; the visual message remains. **Test alerts** lets you check the volume or resume sound after the browser suspends it.
+
+Keep the mobile page visible for alerts. Old matches do not replay on refresh, reconnection or switching player buttons. Vibration depends on the browser/device (supported by Chrome on Android, not Safari on iPhone); sound also depends on the phone's volume, silent settings and browser audio restrictions. The visual message works without sound or vibration, and the pulse respects reduced-motion preferences.
+
+Keep the PC game tab and server open and the PC awake. A phone refresh reconnects to the same link; refreshing the PC resets the game, so create a new mobile link afterwards. A disconnected phone keeps the last colour visible, shows a connection message and disables question controls until reconnected. Delivery retries use the same request ID to avoid duplicate answers.
+
+If the phone cannot connect, use the PC address rather than `localhost`, allow Node.js through Windows Firewall on your **private** network, and check that guest Wi-Fi/client isolation is not blocking devices from reaching each other. You do not need router port forwarding. Anyone with the mobile link can view and control its players; use it with your game group.
+
+Mobile connection data expires after 12 hours without a PC update and is cleaned up when a new connection is created. It is not a saved game: the PC browser remains responsible for game state and participation records.
+
+For development checks, run `npm run test:mobile` for question-action rules. With the local server running, `node scripts/check-mobile.mjs http://localhost:5173` tests isolated synthetic rooms, simultaneous submissions, retries, validation and disconnect recovery.
 
 **Windows:** keep the project in a short path, such as `D:\projects\icebreaker-uno-source`. If the path is very long, `npm run install:ci` can fail with an `esbuild.exe ENOENT` error.
 
@@ -72,13 +99,13 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 
 ## Prototype limits
 
-- Seats, answers and the current game live only in the open browser page. Refreshing the page clears them (the browser asks first while a game is running). Nothing is sent to a server.
+- Seats, answer histories and the current game live in the PC browser page. Refreshing it clears them (the browser asks first while a game is running). Optional mobile sharing relays a public snapshot and question actions through the PC server; it does not restore a closed game.
 - Participation records are kept in this browser's `localStorage`, so they only exist on the device the game was played on, and clearing the browser's site data deletes them.
 - The sign-in form does not verify the email or create an account.
 - The question bank has ten questions about study habits and teamwork (`QUESTIONS` in `lib/game.ts`, also listed in `Design/Icebreaker_UNO_Question_Bank.md`).
 - The screen cannot see the physical cards. Players press the buttons themselves after an action card and when someone runs out of cards.
 - Percentages represent answer similarity within this short activity. They are not a personality test or proof of long-term group compatibility.
-- The server API and database from the earlier version (`app/api/game/route.ts`, `db/`, `drizzle/`) are still in the project, but the current page does not use them.
+- The older `app/api/game/route.ts` API and `ice_sessions` database table remain unused. Mobile sharing uses `app/api/mobile/route.ts` and the separate `mobile_rooms` table.
 
 ## Key files
 
@@ -88,4 +115,12 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 | `app/globals.css` | Styles. The newer styles are at the end of the file |
 | `lib/game.ts` | The question bank (`QUESTIONS`) and rule names (`RULES`) |
 | `lib/participation.ts` | The participation log: saving rows to `localStorage`, clearing them and exporting CSV |
+| `app/mobile/page.tsx` | Mobile player tabs, live colours and question controls |
+| `app/api/mobile/route.ts` | Local shared snapshots, authenticated PC updates and deduplicated phone commands |
+| `hooks/use-mobile-host.ts` | Publishes the PC state and applies queued phone actions |
+| `hooks/use-match-alerts.ts` | Mobile match notifications, sound opt-in and vibration |
+| `lib/mobile-alerts.ts` | Match deduplication and the locally generated bell sound |
+| `components/mobile-invite.tsx` | LAN address and table-specific mobile link |
+| `components/mobile-join.tsx` | Free-seat selection, mobile sign-in and guest seating |
+| `lib/mobile.ts` | Shared mobile types, input validation and request helpers |
 | `backup/` | The earlier version's page (Host, Shared screen and Player views), kept for reference |
