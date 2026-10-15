@@ -20,19 +20,20 @@ declare global {
 }
 
 declare namespace VinextRouteTypes {
-  type PageRoute = never;
-  type LayoutRoute = never;
-  type RouteHandlerRoute = never;
-  type AppRoute = never;
+  type PageRoute = "/" | "/mobile";
+  type LayoutRoute = "/";
+  type RouteHandlerRoute = "/api/game" | "/api/mobile";
+  type AppRoute = "/" | "/api/game" | "/api/mobile" | "/mobile";
 
   interface ParamMap {
-    [route: string]: {};
-
+    "/": {};
+    "/api/game": {};
+    "/api/mobile": {};
+    "/mobile": {};
   }
 
   interface LayoutSlotMap {
-    [route: string]: never;
-
+    "/": never;
   }
 }
 
