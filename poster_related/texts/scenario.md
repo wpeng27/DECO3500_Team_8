@@ -1,4 +1,4 @@
-Scenario
+Scenario: With Icebreaker UNO
 
 At the start of a tutorial, the tutor asks students to form teams for a semester-long project. Instead of approaching an existing group, a student who does not know anyone sits down at an Icebreaker UNO table with up to three classmates. Each player signs in with a preferred name or continues as a guest, and someone presses Start game to begin the 10-minute session.
 
