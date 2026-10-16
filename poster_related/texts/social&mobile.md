@@ -43,7 +43,7 @@ The interface responds to the current game state, including occupied seats, acti
 
 4. Transient
 
-The experience supports a short tutorial-session interaction rather than creating permanent profiles or long-term assessments. The app only keeps a simple record of who took part, stored on the shared-screen computer, and phone connections expire after the session.
+The experience supports a short tutorial-session interaction rather than creating permanent profiles or long-term assessments. Names and emails are used only for the current game, and phone connections expire after the session.
 
 5. Public–Private Balance
 

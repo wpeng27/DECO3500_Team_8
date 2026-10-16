@@ -1,3 +1,5 @@
+Scenario
+
 At the start of a tutorial, the tutor asks students to form teams for a semester-long project. Instead of approaching an existing group, a student who does not know anyone sits down at an Icebreaker UNO table with up to three classmates. Each player signs in with a preferred name or continues as a guest, and someone presses Start game to begin the 10-minute session.
 
 The group plays UNO with physical cards. When an action card is played, the affected player can draw a question, such as "How do you prefer your group to communicate?", and answer it or skip it, either on the shared screen or on their own phone. When two players give similar answers, their corner colours move closer and their phones chime, giving them a natural reason to talk. After every three answered questions, a new rule changes how players interact, and anyone can press Pause to keep a conversation going.
