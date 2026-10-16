@@ -1,11 +1,9 @@
 'use client';
 
-import {useEffect,useState,useSyncExternalStore} from 'react';
+import {useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
-import {Check,Download,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Smartphone,Sparkles,Trash2,UserRound,X} from 'lucide-react';
+import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Smartphone,Sparkles,UserRound,X} from 'lucide-react';
 import {QUESTIONS,RULES,isMatch,isOptOut} from '../lib/game';
-import {clearLog,downloadCsv,readLog,saveRows} from '../lib/participation';
-import type {ParticipationRow} from '../lib/participation';
 import {mobileCommandError,mobileId} from '../lib/mobile';
 import type {MobileCommand,MobileMatch,MobileSnapshot,OpenQuestion} from '../lib/mobile';
 import {useMobileHost} from '../hooks/use-mobile-host';
@@ -35,7 +33,7 @@ const ruleHelp:Record<string,string>={
 
 const steps=[
   ['Take a seat','Up to four people can play. Take one corner as your seat, or open the Mobile screens link on a phone connected to the same Wi-Fi and choose a free seat there.'],
-  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details. Your email is only used to record who took part in the game, and is not used for anything else.'],
+  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details. Your email is used only for the current game session and is never shown to other players.'],
   ['Start the game','Once at least two players are seated, press Start game in the circle in the middle. This starts the 10-minute timer.'],
   ['Play UNO with real cards','Play UNO with physical cards around the screen. The circle in the middle shows the time left and the current extra rule. Anyone can press Pause, which also stops the timer.'],
   ['Draw a question after each action card','Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. Only draw a question after you play one (or when another player picks you). Press Draw a question in your corner and read the question. Then either choose an answer and press Submit answer, or press Skip question if you would rather not answer.'],
@@ -43,14 +41,6 @@ const steps=[
   ['Rules change automatically','The screen counts the questions answered at the table. After every three answers, the extra rule changes automatically and the screen shows Rule changed. Skipped questions do not count, so skipping cannot be used to change the rule.'],
   ['When does the game end?','The game lasts 10 minutes from when you press Start game. It ends when the timer reaches zero or when someone has no cards left, whichever comes first. If someone has no cards left, press Player out of cards. Each corner then shows your similarity scores with the other players.'],
 ];
-
-// Local date and time, readable in a spreadsheet: 2026-10-13 14:05:09
-function stamp(date=new Date()){
-  const pad=(value:number)=>String(value).padStart(2,'0');
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
-
-const noSubscribe=()=>()=>{};
 
 function formatTime(seconds:number){
   return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
@@ -162,26 +152,9 @@ function Brand(){
 }
 
 function RulesCard({onConfirm,confirmLabel}:{onConfirm:()=>void;confirmLabel:string}){
-  const [confirmClear,setConfirmClear]=useState(false);
-  const [,setLogVersion]=useState(0);
-  // Read straight from localStorage on each render; null during server rendering.
-  const recordCount=useSyncExternalStore(noSubscribe,()=>readLog().length,()=>null);
-
-  function clearRecords(){
-    if(!confirmClear){setConfirmClear(true);return;}
-    clearLog();
-    setConfirmClear(false);
-    setLogVersion(version=>version+1);
-  }
-
   return <section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol>
-    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are saved on this PC to record who took part in the game. Mobile sign-in sends these details through the PC server to join your seat; your email is never shown to other players. When mobile screens are enabled, player names, colours and open questions are shared with connected phones. Choose Continue as Guest if you would rather not share your details.</p></aside>
+    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are used only to join your seat for the current game. Mobile sign-in sends these details through the PC server; your email is never shown to other players. When mobile screens are enabled, player names, colours and open questions are shared with connected phones. Choose Continue as Guest if you would rather not share your details.</p></aside>
     <button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{confirmLabel}</button>
-    {recordCount!==null&&<div className="intro-records">
-      <span>For the test team: {recordCount} participation {recordCount===1?'record':'records'} saved on this device.</span>
-      <div><button className="ghost" type="button" disabled={!recordCount} onClick={()=>downloadCsv(readLog())}><Download size={15}/>Download CSV</button>
-      <button className={confirmClear?'danger':'ghost'} type="button" disabled={!recordCount} onClick={clearRecords} onBlur={()=>setConfirmClear(false)}><Trash2 size={15}/>{confirmClear?'Click again to clear':'Clear records'}</button></div>
-    </div>}
   </section>;
 }
 
@@ -289,7 +262,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,fl
       {flash&&<div className="flash-banner" role="status">{flash.text}</div>}
       {!seat?(signingIn?<form className="seat-form" onSubmit={event=>{event.preventDefault();onSit({name:name.trim(),email:email.trim(),guest:false});setSigningIn(false)}}>
         <span className="seat-label">{label} · Sign in</span>
-        <label>Email<input type="email" required autoComplete="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="you@example.com"/><small className="email-note">Only used to record who took part in the game.</small></label>
+        <label>Email<input type="email" required autoComplete="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="you@example.com"/><small className="email-note">Only used for the current game session. Never shown to other players.</small></label>
         <label>Preferred name<input required maxLength={20} value={name} onChange={event=>setName(event.target.value)} placeholder="What should we call you?"/></label>
         <div className="seat-actions"><button className="primary" type="submit" disabled={!name.trim()||!email.trim()}>Sign in</button><button className="ghost" type="button" onClick={()=>setSigningIn(false)}>Cancel</button></div>
       </form>:<div className="seat-empty">
@@ -342,13 +315,6 @@ export default function Home(){
   const [timeLeft,setTimeLeft]=useState(GAME_SECONDS);
   const [endReason,setEndReason]=useState<'time'|'cards'|null>(null);
   const [tally,setTally]=useState({answered:0,skipped:0});
-  // One participation row per person per game, saved to localStorage whenever it changes.
-  const [currentGame,setCurrentGame]=useState<{id:string;startedAt:string}|null>(null);
-  const [gameLog,setGameLog]=useState<ParticipationRow[]>([]);
-
-  useEffect(()=>{
-    saveRows(gameLog);
-  },[gameLog]);
 
   useEffect(()=>{
     if(!flash)return;
@@ -424,20 +390,7 @@ export default function Home(){
     return()=>window.removeEventListener('beforeunload',warn);
   },[playing]);
 
-  function newRow(game:{id:string;startedAt:string},index:number,seat:Seat):ParticipationRow{
-    const joinedAt=stamp();
-    return {id:`${game.id}-${index+1}-${joinedAt}`,gameId:game.id,gameStartedAt:game.startedAt,gameEndedAt:'',endReason:'',seat:SEATS[index].label,name:seat.guest?'Guest':seat.name,email:seat.email,guest:seat.guest,joinedAt,leftAt:'',answered:0,skipped:0};
-  }
-
-  // The row for whoever is sitting in this seat now (not someone who left it earlier).
-  function updateSeatRow(index:number,change:(row:ParticipationRow)=>ParticipationRow){
-    setGameLog(rows=>rows.map(row=>row.seat===SEATS[index].label&&!row.leftAt&&!row.gameEndedAt?change(row):row));
-  }
-
   function startGame(){
-    const game={id:`G${Date.now().toString(36).toUpperCase()}`,startedAt:stamp()};
-    setCurrentGame(game);
-    setGameLog(seats.flatMap((seat,index)=>seat?[newRow(game,index,seat)]:[]));
     setTimeLeft(GAME_SECONDS);
     setEndsAt(Date.now()+GAME_SECONDS*1000);
     setGameStarted(true);
@@ -467,7 +420,6 @@ export default function Home(){
     const matched=isOptOut(questionIndex,optionIndex)?[]:histories.flatMap((history,peerIndex)=>peerIndex!==seatIndex&&seats[peerIndex]&&history[questionIndex]!==undefined&&!isOptOut(questionIndex,history[questionIndex])&&isMatch(questionIndex,optionIndex,history[questionIndex])?[peerIndex]:[]);
     setHistories(all=>all.map((history,index)=>index===seatIndex?{...history,[questionIndex]:optionIndex}:history));
     countQuestion('answered');
-    updateSeatRow(seatIndex,row=>({...row,answered:row.answered+1}));
     if(matched.length){
       const names=[seatIndex,...matched].map(index=>displayName(seats,index));
       const text=`${QUESTIONS[questionIndex].complementary?'Complementary roles':'Answer match'}: ${names.join(' & ')} · colours moved closer`;
@@ -480,10 +432,6 @@ export default function Home(){
 
   function setSeat(index:number,seat:Seat|null){
     if(seat&&seats[index])return;
-    if(playing&&currentGame){
-      if(seat)setGameLog(rows=>[...rows,newRow(currentGame,index,seat)]);
-      else updateSeatRow(index,row=>({...row,leftAt:stamp()}));
-    }
     setSeats(all=>all.map((current,currentIndex)=>currentIndex===index?seat:current));
     setSeatRevisions(all=>all.map((revision,currentIndex)=>currentIndex===index?revision+1:revision));
     setSeatIds(all=>all.map((id,currentIndex)=>currentIndex===index?(seat?mobileId():''):id));
@@ -508,7 +456,6 @@ export default function Home(){
     if(!playing||!seats[seatIndex]||!openQuestions[seatIndex])return;
     setOpenQuestions(all=>all.map((question,index)=>index===seatIndex?null:question));
     countQuestion('skipped');
-    updateSeatRow(seatIndex,row=>({...row,skipped:row.skipped+1}));
   }
 
   function handleMobileCommand(command:MobileCommand):string|null{
@@ -546,8 +493,6 @@ export default function Home(){
     setRuleNotice(null);
     setEndReason(reason);
     setEnded(true);
-    const endedAt=stamp();
-    setGameLog(rows=>rows.map(row=>({...row,gameEndedAt:endedAt,endReason:reason==='time'?'Time up':'Player out of cards'})));
   }
 
   function playAgain(){
@@ -566,8 +511,6 @@ export default function Home(){
     setEndsAt(null);
     setRuleNotice(null);
     setGameStarted(false);
-    setCurrentGame(null);
-    setGameLog([]);
     setSessionKey(key=>key+1);
   }
 

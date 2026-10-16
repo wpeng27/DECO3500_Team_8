@@ -11,7 +11,7 @@ A shared-screen icebreaker for up to four players, with optional mobile player s
    - **Sign in**: enter an email and a preferred name.
    - **Continue as Guest**: sit down without sharing anything.
 
-   The email is not shown on screen and is only used to record who took part in the game (see **Participation records** below). The rules screen and the sign-in form both say so. A seated player can leave with the button next to their name. Leaving clears that player's answers, so the button needs a second press: the first press turns it red and shows "Press the red button again to leave. Your answers will be cleared." under the player's name, and clicking anywhere else cancels.
+   The email is not shown on screen and is used only for the current game session. The rules screen and the sign-in form both say so. A seated player can leave with the button next to their name. Leaving clears that player's answers, so the button needs a second press: the first press turns it red and shows "Press the red button again to leave. Your answers will be cleared." under the player's name, and clicking anywhere else cancels.
 
    Each seat has a thick border in its own colour. The border never changes, so seats stay easy to tell apart even after the inside colours blend (see step 5).
 4. **Start the game.** Once at least two players are seated, press **Start game** in the centre circle. This starts the 10-minute countdown. Until then the circle shows **Ready** and 10:00, and the corners show "Questions start when the game starts" instead of the draw button.
@@ -43,17 +43,6 @@ A shared-screen icebreaker for up to four players, with optional mobile player s
      - **Swap cards:** on your turn, you may swap one card with another player if that player agrees.
 9. The **Rules** button in the top right opens the rules over the table. Close it with **Back to the game**, the Escape key or a click outside. Everything underneath stays as it was, including open questions and half-filled sign-in forms, and the countdown keeps running.
 
-## Participation records
-
-The app keeps a log of who took part, so the team can see who has used the system during testing.
-
-- **What is recorded:** one row per person per game, with the game ID, when the game started and ended, why it ended, the seat, the preferred name (or "Guest"), the email (signed-in players only), whether they played as a guest, when they joined, whether and when they left early, and how many questions they answered and skipped.
-- **When:** rows are created when someone presses **Start game** (for everyone seated) or when someone sits down during a game, and are updated as they answer, skip, leave or the game ends. A player who leaves and someone who takes the seat afterwards get separate rows.
-- **Where:** participation records are saved in the PC browser's `localStorage`. Mobile sign-in sends the preferred name and email to the PC through a private queued request on its local server; the request is removed when the PC acknowledges it. Only authenticated PC updates can retrieve queued sign-in details. Public mobile snapshots and receipts never include emails or participation records. Player display names, colours, open questions and game status are shared with connected phones.
-- **Export:** at the bottom of the rules screen (also available from the **Rules** button during a game), **Download CSV** saves `icebreaker-participants-YYYY-MM-DD.csv`, which opens in Excel. **Clear records** deletes the log after a second click to confirm.
-- **Unfinished games:** rows whose game never ended (still running, or the page was closed or refreshed) are exported with the end reason "Not finished (still playing, or page closed)".
-- **Privacy:** the rules screen and the sign-in form tell players that their email is only used to record who took part in the game and not for anything else. Players who prefer not to share an email can continue as a guest.
-
 ## Run locally
 
 Use Node.js 22.13 or later and npm. In the project folder, run:
@@ -79,7 +68,7 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 6. Each occupied seat appears as a player button. Switch between them to show that player's current colour and question controls. The shared table supports four seats; two seated players produce two player buttons and four produce four. Free seats are listed separately in the sign-in form.
 7. Start the game on the PC once at least two players are seated. Draw, answer or skip on either screen. An open question is shared between devices; repeated submissions are handled once. Colour changes, pause/resume, players leaving, game end and new rounds update automatically (normally within about 1–2 seconds).
 
-The mobile panel uses the same colour blend as the PC corner, with the original seat colour around its border. Phones can control any player through the tabs. Sign-in and guest seating work on either device, including during play or a pause; participation records use the same PC logging as before. Game start/pause/end, leaving seats, results and participation exports remain on the PC. New players wait until the next round if the game has finished.
+The mobile panel uses the same colour blend as the PC corner, with the original seat colour around its border. Phones can control any player through the tabs. Sign-in and guest seating work on either device, including during play or a pause. Game start/pause/end, leaving seats and results remain on the PC. New players wait until the next round if the game has finished.
 
 **Match alerts:** tap **Enable sound & vibration** on each phone once. It plays a short test chime and vibrates where supported. When the selected player is involved in a new answer match (including complementary roles), the phone plays the chime, gives two short vibrations and shows a match message with a gentle border pulse. Both matching players' phones can receive the alert, even when the answer was submitted on the PC. **Mute alerts** turns off sound and vibration; the visual message remains. **Test alerts** lets you check the volume or resume sound after the browser suspends it.
 
@@ -89,7 +78,7 @@ Keep the PC game tab and server open and the PC awake. A phone refresh reconnect
 
 If the phone cannot connect, use the PC address rather than `localhost`, allow Node.js through Windows Firewall on your **private** network, and check that guest Wi-Fi/client isolation is not blocking devices from reaching each other. You do not need router port forwarding. Anyone with the mobile link can view and control its players; use it with your game group.
 
-Mobile connection data expires after 12 hours without a PC update and is cleaned up when a new connection is created. It is not a saved game: the PC browser remains responsible for game state and participation records.
+Mobile connection data expires after 12 hours without a PC update and is cleaned up when a new connection is created. It is not a saved game: the PC browser remains responsible for the current game state.
 
 For development checks, run `npm run test:mobile` for question-action rules. With the local server running, `node scripts/check-mobile.mjs http://localhost:5173` tests isolated synthetic rooms, simultaneous submissions, retries, validation and disconnect recovery.
 
@@ -100,7 +89,6 @@ For development checks, run `npm run test:mobile` for question-action rules. Wit
 ## Prototype limits
 
 - Seats, answer histories and the current game live in the PC browser page. Refreshing it clears them (the browser asks first while a game is running). Optional mobile sharing relays a public snapshot and question actions through the PC server; it does not restore a closed game.
-- Participation records are kept in this browser's `localStorage`, so they only exist on the device the game was played on, and clearing the browser's site data deletes them.
 - The sign-in form does not verify the email or create an account.
 - The question bank has ten questions about study habits and teamwork (`QUESTIONS` in `lib/game.ts`, also listed in `Design/Icebreaker_UNO_Question_Bank.md`).
 - The screen cannot see the physical cards. Players press the buttons themselves after an action card and when someone runs out of cards.
@@ -114,7 +102,6 @@ For development checks, run `npm run test:mobile` for question-action rules. Wit
 | `app/page.tsx` | The whole app: four seats, answer histories, colour convergence, pairwise percentages and the result state |
 | `app/globals.css` | Styles. The newer styles are at the end of the file |
 | `lib/game.ts` | The question bank (`QUESTIONS`) and rule names (`RULES`) |
-| `lib/participation.ts` | The participation log: saving rows to `localStorage`, clearing them and exporting CSV |
 | `app/mobile/page.tsx` | Mobile player tabs, live colours and question controls |
 | `app/api/mobile/route.ts` | Local shared snapshots, authenticated PC updates and deduplicated phone commands |
 | `hooks/use-mobile-host.ts` | Publishes the PC state and applies queued phone actions |
