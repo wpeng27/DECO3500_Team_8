@@ -4,7 +4,7 @@ A shared-screen icebreaker for up to four players, with optional mobile player s
 
 ## How it works
 
-1. **Rules screen.** Opening the app shows a short explanation of how the game works. Choose **Got it, let's start** to open the table. This does not start the countdown. During the game, the **Rules** button in the top right opens the same rules over the table (see step 9).
+1. **Rules screen.** Opening the app shows all eight rules in a compact four-column overview on desktop, with the email notice and **Got it, let's start** button below. Narrow screens use fewer columns to keep the text readable. Choose **Got it, let's start** to open the table. This does not start the countdown. During the game, the **Rules** button in the top right opens the same rules over the table (see step 9).
 2. **The table.** The screen is split into four corners, one seat per player, with a circle in the middle for the whole table.
    - The two top seats are rotated 180° so that players sitting on the far side of the screen can read them.
 3. **Take a seat.** Each empty corner has two choices:
@@ -84,7 +84,7 @@ For development checks, run `npm run test:mobile` for question-action rules. Wit
 
 **Windows:** keep the project in a short path, such as `D:\projects\icebreaker-uno-source`. If the path is very long, `npm run install:ci` can fail with an `esbuild.exe ENOENT` error.
 
-**Small screens:** if the bottom seats do not fit, zoom the browser out (`Ctrl` + `-`) or use full screen (`F11`).
+**Shared-screen layout:** above 600px wide, the table fits the browser window and keeps the four corners the same size when questions open. Question cards use the space below the player details, with text and spacing adapting to the corner height. If a question still needs more room, scroll inside its question-and-answer area; Submit and Skip stay visible. Narrow screens keep the stacked seat layout.
 
 ## Prototype limits
 

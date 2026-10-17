@@ -32,14 +32,14 @@ const ruleHelp:Record<string,string>={
 };
 
 const steps=[
-  ['Take a seat','Up to four people can play. Take one corner as your seat, or open the Mobile screens link on a phone connected to the same Wi-Fi and choose a free seat there.'],
-  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest to play without sharing any details. Your email is used only for the current game session and is never shown to other players.'],
-  ['Start the game','Once at least two players are seated, press Start game in the circle in the middle. This starts the 10-minute timer.'],
-  ['Play UNO with real cards','Play UNO with physical cards around the screen. The circle in the middle shows the time left and the current extra rule. Anyone can press Pause, which also stops the timer.'],
-  ['Draw a question after each action card','Every card except a number card is an action card: Skip, Reverse, Draw Two, Wild and Wild Draw Four. Only draw a question after you play one (or when another player picks you). Press Draw a question in your corner and read the question. Then either choose an answer and press Submit answer, or press Skip question if you would rather not answer.'],
-  ['How answers are used',"When your answer matches another player's, the inside of your corners moves towards each other's colour; the outer border keeps your own colour. Answers match when they are the same, except for the question about which task you would pick up first: there, different answers match, because a team needs people who take on different tasks. Your similarity score with another player compares only the questions you have both answered."],
-  ['Rules change automatically','The screen counts the questions answered at the table. After every three answers, the extra rule changes automatically and the screen shows Rule changed. Skipped questions do not count, so skipping cannot be used to change the rule.'],
-  ['When does the game end?','The game lasts 10 minutes from when you press Start game. It ends when the timer reaches zero or when someone has no cards left, whichever comes first. If someone has no cards left, press Player out of cards. Each corner then shows your similarity scores with the other players.'],
+  ['Take a seat','Up to four players: choose a corner, or open Mobile screens on a phone using the same Wi-Fi and choose a free seat.'],
+  ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest without sharing any details.'],
+  ['Start the game','With at least two players seated, press Start game in the centre circle to begin the 10-minute timer.'],
+  ['Play UNO with real cards','Use physical UNO cards. The centre circle shows the time and extra rule. Anyone can press Pause to stop the timer, then Resume.'],
+  ['Draw after an action card','After you play Skip, Reverse, Draw Two, Wild or Wild Draw Four (or another player picks you), press Draw a question. Choose an option and Submit answer, or Skip question. Number cards do not trigger questions.'],
+  ['How answers are used','Matching answers blend the inside colours; borders keep your seat colour. For the task-role question, different answers match because teams need different roles. Similarity scores compare only questions you both answered.'],
+  ['Rules change automatically','The table counts answers and skips. Every three answers changes the extra rule and shows Rule changed. Skipped questions do not count towards a rule change.'],
+  ['When does the game end?','The game ends when time runs out or someone has no cards left, whichever comes first. For empty hands, press Player out of cards. Each corner then shows similarity results with the other players.'],
 ];
 
 function formatTime(seconds:number){
@@ -152,9 +152,13 @@ function Brand(){
 }
 
 function RulesCard({onConfirm,confirmLabel}:{onConfirm:()=>void;confirmLabel:string}){
-  return <section className="intro-card"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1><ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><b>{i+1}</b><div><strong>{title}</strong><p>{text}</p></div></li>)}</ol>
-    <aside className="intro-privacy"><strong>About your email</strong><p>If you sign in, your email and preferred name are used only to join your seat for the current game. Mobile sign-in sends these details through the PC server; your email is never shown to other players. When mobile screens are enabled, player names, colours and open questions are shared with connected phones. Choose Continue as Guest if you would rather not share your details.</p></aside>
-    <button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{confirmLabel}</button>
+  return <section className="intro-card">
+    <header className="intro-heading"><span className="eyebrow">Before you start</span><h1>How Icebreaker UNO works</h1></header>
+    <ol className="intro-steps">{steps.map(([title,text],i)=><li key={title}><div className="intro-step-heading"><b>{i+1}</b><strong>{title}</strong></div><p>{text}</p></li>)}</ol>
+    <footer className="intro-footer">
+      <aside className="intro-privacy"><strong>About your email</strong><p>Your email and preferred name are used only for this game; mobile sign-in sends them through the PC server. Your email is never shown to other players. Connected phones share player names, colours and open questions. Choose Continue as Guest to avoid sharing sign-in details.</p></aside>
+      <button className="primary intro-confirm" onClick={onConfirm}><Check size={18}/>{confirmLabel}</button>
+    </footer>
   </section>;
 }
 
@@ -278,8 +282,11 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,fl
             )}
           {q&&<div className="corner-question">
             <button className="corner-question-close" type="button" aria-label="Skip question" title="Skip question" onClick={skipQuestion}><X size={14}/></button>
-            <span className="question-badge">Question · Choose one</span><p>{q.text}</p>
-            <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>question&&setSelection({questionId:question.id,option:optionIndex})}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
+            <span className="question-badge">Question · Choose one</span>
+            <div className="question-body" key={question?.id} tabIndex={0} role="region" aria-label={`${label} question and answers`}>
+              <p>{q.text}</p>
+              <div className="question-options" role="radiogroup" aria-label={q.text}>{q.options.map((option,optionIndex)=><button key={optionIndex} type="button" role="radio" className={picked===optionIndex?'selected':''} aria-checked={picked===optionIndex} onClick={()=>question&&setSelection({questionId:question.id,option:optionIndex})}><span>{String.fromCharCode(65+optionIndex)}</span>{option}</button>)}</div>
+            </div>
             <div className="question-actions">
               <button className="primary" type="button" disabled={picked===null} onClick={submitAnswer}><Check size={14}/>Submit answer</button>
               <button className="ghost" type="button" onClick={skipQuestion}>Skip question</button>
