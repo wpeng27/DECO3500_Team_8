@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect,useRef,useState} from 'react';
-import {mobileId,mobileRequest} from '../lib/mobile';
+import {MobileRequestError,mobileId,mobileRequest} from '../lib/mobile';
 import type {CommandReceipt,MobileCommand,MobileSnapshot} from '../lib/mobile';
 
 export function useMobileHost(snapshot:MobileSnapshot,onCommand:(command:MobileCommand)=>string|null){
@@ -35,6 +35,7 @@ export function useMobileHost(snapshot:MobileSnapshot,onCommand:(command:MobileC
       }catch(error){
         if(stopped)return;
         setStatus(error instanceof Error?error.message:'Reconnecting…');
+        if(error instanceof MobileRequestError&&error.status===404)created=false;
       }
       // One command per cycle lets React commit the new state before publishing its receipt.
       if(!stopped)timer=setTimeout(sync,400);

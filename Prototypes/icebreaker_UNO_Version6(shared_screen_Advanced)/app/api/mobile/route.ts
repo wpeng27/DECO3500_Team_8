@@ -33,8 +33,9 @@ export async function GET(request:Request){
 }
 
 export async function POST(request:Request){
-  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Open this page on the same server as the table.'},403);
+  // Drain rejected requests too, so the local Worker proxy can reuse its connection.
   const raw=await request.text();
+  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Open this page on the same server as the table.'},403);
   if(raw.length>24000)return json({error:'Message too large.'},413);
   let input:z.infer<typeof requestSchema>;
   try{input=requestSchema.parse(JSON.parse(raw));}catch{return json({error:'Invalid mobile request.'},400);}

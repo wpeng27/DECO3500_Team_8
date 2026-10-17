@@ -2,6 +2,7 @@
 // Run: node scripts/check-mobile.mjs http://localhost:5173
 import assert from 'node:assert/strict';
 import {randomBytes} from 'node:crypto';
+import {getLanAddresses} from './lan-addresses.mjs';
 
 const base=new URL(process.argv[2]??'http://localhost:5173');
 assert(['localhost','127.0.0.1','[::1]'].includes(base.hostname),'Use a local test server.');
@@ -120,6 +121,24 @@ joinSnapshot={...joinSnapshot,players:[],availableSeats:emptySeats.map(seat=>({.
 await post({kind:'sync',code:joinCode,token:joinToken,snapshot:joinSnapshot,receipt:null});
 await post({kind:'command',code:joinCode,command:{...guestJoin,id:id()}},409);
 console.log('PASS: mobile sign-in, guest seating, competing claims, private email delivery and stale joins');
+
+// Missing room codes must never connect a phone to a previous shared game.
+assert.equal((await fetch(new URL('/api/mobile',base))).status,400);
+await post({kind:'create',token:id(),snapshot},400);
+await post({kind:'sync',token,snapshot,receipt:null},400);
+await post({kind:'command',command:{id:id(),playerId:players[0].id,kind:'draw'}},400);
+// A refreshed PC creates its own room without changing the old room's game.
+const newCode=id(),newToken=id();
+const freshSnapshot={status:'ready',rule:'Normal UNO',timeLeft:600,players:[],availableSeats:emptySeats};
+const previousSnapshot=(await read()).snapshot;
+await post({kind:'create',code:newCode,token:newToken,snapshot:freshSnapshot});
+assert.deepEqual((await read(newCode)).snapshot,freshSnapshot);
+assert.deepEqual((await read()).snapshot,previousSnapshot);
+await post({kind:'sync',code:newCode,token,snapshot,receipt:null},403);
+const network=await (await fetch(new URL('/api/mobile/network',base))).json();
+assert.deepEqual(network.addresses,getLanAddresses());
+assert.equal((await fetch(new URL(`/mobile?room=${newCode}`,base))).status,200);
+console.log('PASS: required room codes, separate rooms after PC refresh, and detected network addresses');
 
 await new Promise(resolve=>setTimeout(resolve,15_200));
 assert.equal((await read()).online,false);

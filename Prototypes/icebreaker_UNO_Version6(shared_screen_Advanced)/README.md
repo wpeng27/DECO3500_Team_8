@@ -61,9 +61,9 @@ Then open http://localhost:5173/. If port 5173 is already in use, run `npm run d
 ## Connect mobile screens
 
 1. Connect the PC and phones to the same Wi-Fi/LAN. Open the game on the PC and continue past the rules screen. Players can take their seats from their own phones.
-2. On the PC, click **Mobile screens** in the header. This creates a separate connection for this table; another PC browser tab gets its own link.
-3. Replace `localhost` in **PC network address** with the PC's LAN IPv4 address (for example `192.168.1.25`). Find it with `ipconfig` in PowerShell under the active Wi-Fi/Ethernet adapter, or in the dev server's printed **Network** URL.
-4. Copy the generated link and open it in the phone's browser. It looks like `http://192.168.1.25:5173/mobile?room=...`. The room part is required. No installation is needed.
+2. On the PC, click **Mobile screens** in the header. This creates a separate room for this PC game and shows its mobile link and QR code; another PC browser tab gets its own room.
+3. **PC network address** fills automatically from the PC's IPv4 network adapters (the same addresses shown by `ipconfig`). Wi-Fi is preferred, with Ethernet and other adapters available in **Detected networks**. If necessary, choose the adapter on the phones' network or edit the address. Detection runs when `npm run dev` or `npm start` starts; restart the server after changing networks.
+4. Scan the QR code with the phone's camera, or open the displayed link, such as `http://192.168.1.25:5173/mobile?room=...`. The room code is required and is included automatically in the link and QR code. The QR code is generated locally and includes the server's current port. No installation is needed.
 5. Choose a free coloured seat on the phone. Enter a preferred name and email and press **Sign in**, or press **Continue as Guest** without entering details. The player appears on the PC automatically and the phone selects the joined seat. **Join this table** reopens the form when more seats are free. Simultaneous claims cannot overwrite an occupied seat; choose another free seat if someone gets there first.
 6. Each occupied seat appears as a player button. Switch between them to show that player's current colour and question controls. The shared table supports four seats; two seated players produce two player buttons and four produce four. Free seats are listed separately in the sign-in form.
 7. Start the game on the PC once at least two players are seated. Draw, answer or skip on either screen. An open question is shared between devices; repeated submissions are handled once. Colour changes, pause/resume, players leaving, game end and new rounds update automatically (normally within about 1–2 seconds).
@@ -74,13 +74,13 @@ The mobile panel uses the same colour blend as the PC corner, with the original 
 
 Keep the mobile page visible for alerts. Old matches do not replay on refresh, reconnection or switching player buttons. Vibration depends on the browser/device (supported by Chrome on Android, not Safari on iPhone); sound also depends on the phone's volume, silent settings and browser audio restrictions. The visual message works without sound or vibration, and the pulse respects reduced-motion preferences.
 
-Keep the PC game tab and server open and the PC awake. A phone refresh reconnects to the same link; refreshing the PC resets the game, so create a new mobile link afterwards. A disconnected phone keeps the last colour visible, shows a connection message and disables question controls until reconnected. Delivery retries use the same request ID to avoid duplicate answers.
+Keep the PC game tab and server open and the PC awake. A phone refresh reconnects to the same room. Refreshing the PC resets the game: continue past the rules, open **Mobile screens**, and scan its new QR code on each phone to join the new room. Old links remain attached to the old game. A disconnected phone keeps the last colour visible, shows a connection message and disables question controls until reconnected. Delivery retries use the same request ID to avoid duplicate answers.
 
 If the phone cannot connect, use the PC address rather than `localhost`, allow Node.js through Windows Firewall on your **private** network, and check that guest Wi-Fi/client isolation is not blocking devices from reaching each other. You do not need router port forwarding. Anyone with the mobile link can view and control its players; use it with your game group.
 
 Mobile connection data expires after 12 hours without a PC update and is cleaned up when a new connection is created. It is not a saved game: the PC browser remains responsible for the current game state.
 
-For development checks, run `npm run test:mobile` for question-action rules. With the local server running, `node scripts/check-mobile.mjs http://localhost:5173` tests isolated synthetic rooms, simultaneous submissions, retries, validation and disconnect recovery.
+For development checks, run `npm run test:mobile` for question-action rules and `npm run test:connection` for address selection, room-link validation and QR decoding. With the local server running, `node scripts/check-mobile.mjs http://localhost:5173` tests isolated synthetic rooms, simultaneous submissions, retries, room isolation, required room codes, validation and disconnect recovery.
 
 **Windows:** keep the project in a short path, such as `D:\projects\icebreaker-uno-source`. If the path is very long, `npm run install:ci` can fail with an `esbuild.exe ENOENT` error.
 
@@ -107,7 +107,10 @@ For development checks, run `npm run test:mobile` for question-action rules. Wit
 | `hooks/use-mobile-host.ts` | Publishes the PC state and applies queued phone actions |
 | `hooks/use-match-alerts.ts` | Mobile match notifications, sound opt-in and vibration |
 | `lib/mobile-alerts.ts` | Match deduplication and the locally generated bell sound |
-| `components/mobile-invite.tsx` | LAN address and table-specific mobile link |
+| `components/mobile-invite.tsx` | Automatic LAN address selection, room-specific mobile link and QR code |
+| `app/api/mobile/network/route.ts` | Detected PC network addresses supplied by the local server |
+| `scripts/lan-addresses.mjs` | Local IPv4 adapter detection and Wi-Fi preference |
+| `scripts/start-local.mjs` | Built local server launcher with freshly detected network addresses |
 | `components/mobile-join.tsx` | Free-seat selection, mobile sign-in and guest seating |
 | `lib/mobile.ts` | Shared mobile types, input validation and request helpers |
 | `backup/` | The earlier version's page (Host, Shared screen and Player views), kept for reference |

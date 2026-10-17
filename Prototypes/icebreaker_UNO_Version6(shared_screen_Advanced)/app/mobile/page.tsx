@@ -52,7 +52,7 @@ export default function MobilePage(){
         if(stopped)return;
         setRoom(data);
         setConnected(data.online);
-        setError(data.online?'':'PC disconnected. Keep the game tab open on the PC. Reconnecting…');
+        setError(data.online?'':'PC disconnected. Keep its game tab open. If the PC was refreshed, scan the new QR code in Mobile screens.');
       }catch(error){
         if(stopped)return;
         setConnected(false);
