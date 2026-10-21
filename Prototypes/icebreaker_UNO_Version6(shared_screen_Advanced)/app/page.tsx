@@ -3,7 +3,7 @@
 import {useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
 import {Check,Flag,Info,LogIn,LogOut,MessageCircleQuestion,Pause,Play,RotateCcw,Smartphone,Sparkles,UserRound,X} from 'lucide-react';
-import {QUESTIONS,RULES,isMatch,isOptOut} from '../lib/game';
+import {QUESTIONS,RULES,RULE_HELP,isMatch,isOptOut} from '../lib/game';
 import {mobileCommandError,mobileId} from '../lib/mobile';
 import type {MobileCommand,MobileMatch,MobileSnapshot,OpenQuestion} from '../lib/mobile';
 import {useMobileHost} from '../hooks/use-mobile-host';
@@ -22,14 +22,6 @@ const EMPTY_HISTORIES=():AnswerHistory[]=>SEATS.map(()=>({}));
 const GAME_SECONDS=10*60;
 const QUESTIONS_PER_RULE=3;
 const RULE_NOTICE_MS=4000;
-
-const ruleHelp:Record<string,string>={
-  'Normal UNO':'Standard UNO rules, with no extra rule.',
-  'Hidden cards':'Hold your cards facing out so you cannot see them. The other players help you choose what to play.',
-  'Pick a player':'On your turn, pick another player to draw a question in their corner and answer it.',
-  'Give a card':'On your turn, you may give one of your cards to another player, then draw one card from the deck.',
-  'Swap cards':'On your turn, you may swap one card with another player if that player agrees.',
-};
 
 const steps=[
   ['Take a seat','Up to four players: choose a corner, or scan the QR code under Mobile screens with a phone and choose a free seat.'],
@@ -206,7 +198,7 @@ function MatchSummary({overall,matches,seats}:{overall:number|null;matches:Match
   </section>;
 }
 
-function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,flash,ended,playing,paused,rule,color,baseColor,history,matches,overall,allSeats}:{
+function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,flash,ended,playing,paused,rule,timeLeft,color,baseColor,history,matches,overall,allSeats}:{
   pos:string;
   label:string;
   seat:Seat|null;
@@ -221,6 +213,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,fl
   playing:boolean;
   paused:boolean;
   rule:string;
+  timeLeft:number;
   color:string;
   baseColor:string;
   history:AnswerHistory;
@@ -258,6 +251,8 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,fl
   }
 
   const q=question===null?null:QUESTIONS[question.index];
+  // The top corners are rotated towards the far side of the table, where the centre circle reads upside down.
+  const farSide=pos==='tl'||pos==='tr';
   // The inside follows the evolving colour; the border keeps the seat's own colour so seats stay recognisable.
   const cornerStyle={'--player-color':color,'--base-color':baseColor} as CSSProperties;
 
@@ -275,6 +270,7 @@ function Corner({pos,label,seat,onSit,onLeave,onAnswer,onSkip,onDraw,question,fl
       </div>):<>
         <div className="seat-player"><span className="seat-avatar">{seat.guest?<UserRound size={18}/>:Array.from(seat.name)[0]?.toUpperCase()}</span><div><strong>{seat.name}</strong><span>{seat.guest?`Guest · ${label}`:`Signed in · ${label}`}</span><small className="colour-status"><i/>{answerCount?`${answerCount} ${answerCount===1?'answer':'answers'} shaping colour`:'Colour starts unique'}</small>{confirmLeave&&<small className="leave-confirm" role="status">Press the red button again to leave. Your answers will be cleared.</small>}</div><button className={`seat-leave ${confirmLeave?'confirming':''}`} title="Leave this seat" aria-label={confirmLeave?'Press again to leave this seat':'Leave this seat'} onClick={leave} onBlur={()=>setConfirmLeave(false)}><LogOut size={14}/></button></div>
         {ended?<MatchSummary overall={overall} matches={matches} seats={allSeats}/>:<>
+          {farSide&&playing&&<p className="corner-rule" title={RULE_HELP[rule]}><span>{paused?'Paused':'Extra rule'}</span><strong>{rule}</strong><b>{formatTime(timeLeft)}</b></p>}
           {!q&&(!playing?<p className="corner-waiting">Questions start when the game starts.</p>
             :paused?<p className="corner-waiting">Game paused. Questions come back when you press Resume.</p>
             :!unanswered.length?<p className="corner-waiting">You have answered every question.</p>
@@ -359,6 +355,10 @@ export default function Home(){
       id:seatIds[index],seatIndex:index,name:displayName(seats,index),colour:colors[index],baseColour:BASE_COLORS[index],
       answered:Object.keys(histories[index]).length,complete:Object.keys(histories[index]).length===QUESTIONS.length,
       question:openQuestions[index],match:mobileMatches[index],
+      ...(ended?{results:{
+        overall:overallMatch(index,histories,seats),
+        rows:matchRowsFor(index,histories,seats).map(({seatIndex,score,shared,single})=>({name:displayName(seats,seatIndex),score,shared,single})),
+      }}:{}),
     }]:[]),
   };
   const mobile=useMobileHost(mobileSnapshot,handleMobileCommand);
@@ -544,6 +544,7 @@ export default function Home(){
         playing={playing}
         paused={paused}
         rule={rule}
+        timeLeft={timeLeft}
         color={colors[index]}
         baseColor={BASE_COLORS[index]}
         history={histories[index]}
@@ -562,7 +563,7 @@ export default function Home(){
         {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner compares your answers with every other player: the answers themselves after one shared question, a percentage after two or more. Use them as conversation starters, not as a verdict on who you should team up with.</p></div>
         :!gameStarted?<div className="center-idle"><h2>Ready to play?</h2><p>{seatedCount<2?'Take your seats. At least 2 players are needed to start.':'Everyone seated? Press Start game to begin the 10-minute timer.'}</p></div>
         :paused?<div className="center-idle"><Pause size={30}/><h2>Game paused</h2><p>The timer is stopped. Take a moment to talk, then press Resume.</p></div>
-        :<div className="center-idle" key={rule}>{ruleNotice&&<span className="rule-changed-chip">Rule changed</span>}<span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'answer':'answers'}</p></div>}
+        :<div className="center-idle" key={rule}>{ruleNotice&&<span className="rule-changed-chip">Rule changed</span>}<span className="rule-name">{rule}</span><p>{RULE_HELP[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'answer':'answers'}</p></div>}
         <div className="center-actions">{ended?
           <button className="primary" onClick={playAgain}><RotateCcw size={16}/>Play again</button>
           :!gameStarted?<button className="primary start-button" onClick={startGame} disabled={seatedCount<2}><Play size={16}/>Start game</button>

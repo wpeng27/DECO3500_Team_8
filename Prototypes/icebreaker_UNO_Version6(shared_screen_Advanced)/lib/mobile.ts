@@ -11,6 +11,16 @@ const availableSeatSchema=z.object({
   revision:z.number().int().nonnegative(),
 }).strict();
 export type MobileAvailableSeat=z.infer<typeof availableSeatSchema>;
+// End-of-game results, the same as the player's corner on the PC. Only sent once the game has ended.
+const score=z.number().int().min(0).max(100).nullable();
+const resultsSchema=z.object({
+  overall:score,
+  rows:z.array(z.object({
+    name:z.string().min(1).max(80),score,shared:z.number().int().min(0).max(99),
+    single:z.object({question:z.number().int().min(0).max(99),mine:z.number().int().min(0).max(20),theirs:z.number().int().min(0).max(20)}).strict().nullable(),
+  }).strict()).max(31),
+}).strict();
+export type MobileResults=z.infer<typeof resultsSchema>;
 export const mobileIdentitySchema=z.discriminatedUnion('guest',[
   z.object({guest:z.literal(false),name:z.string().trim().min(1).max(20),email:z.string().trim().email().max(254)}).strict(),
   z.object({guest:z.literal(true),name:z.literal('Guest'),email:z.literal('')}).strict(),
@@ -25,6 +35,7 @@ export const mobileSnapshotSchema=z.object({
     id,seatIndex:z.number().int().min(0).max(31),name:z.string().min(1).max(80),
     colour,baseColour:colour,answered:z.number().int().min(0).max(100),
     complete:z.boolean(),question:openQuestionSchema.nullable(),match:matchSchema.nullable().optional(),
+    results:resultsSchema.optional(),
   }).strict()).max(32),
 }).strict();
 export type MobileSnapshot=z.infer<typeof mobileSnapshotSchema>;

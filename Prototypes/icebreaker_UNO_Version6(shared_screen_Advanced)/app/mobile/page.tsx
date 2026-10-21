@@ -3,9 +3,9 @@
 import {useEffect,useState} from 'react';
 import type {CSSProperties} from 'react';
 import {Bell,BellOff,Check,MessageCircleQuestion,Smartphone,Sparkles,Wifi,WifiOff} from 'lucide-react';
-import {QUESTIONS} from '../../lib/game';
+import {QUESTIONS,RULE_HELP,isMatch} from '../../lib/game';
 import {MobileRequestError,mobileId,mobileRequest} from '../../lib/mobile';
-import type {MobileAvailableSeat,MobileCommand,MobileIdentity,MobilePlayer,MobileQuestionCommand,MobileRoom} from '../../lib/mobile';
+import type {MobileAvailableSeat,MobileCommand,MobileIdentity,MobilePlayer,MobileQuestionCommand,MobileResults,MobileRoom} from '../../lib/mobile';
 import {useMatchAlerts} from '../../hooks/use-match-alerts';
 import {MobileJoin} from '../../components/mobile-join';
 
@@ -20,6 +20,26 @@ function QuestionControls({player,disabled,onAction}:{player:MobilePlayer;disabl
     </div>
     <button className="primary mobile-submit" disabled={disabled||picked===null} onClick={()=>{if(picked!==null)onAction('answer',picked);}}><Check size={18}/>Submit answer</button>
     <button className="mobile-skip" disabled={disabled} onClick={()=>onAction('skip')}>Skip question</button>
+  </section>;
+}
+
+// Mirrors the match summary in the player's corner on the PC.
+function Results({results}:{results:MobileResults}){
+  return <section className="mobile-results" aria-label="Your match results">
+    <div className="mobile-results-overall"><span>Overall match</span><strong>{results.overall===null?'—':`${results.overall}%`}</strong></div>
+    <p>Only questions you both answered count; a percentage needs 2 or more. It shows shared answers, not teamwork fit. Use it to start a conversation.</p>
+    {results.rows.length?<ul>{results.rows.map((row,index)=>{
+      if(row.single){
+        const q=QUESTIONS[row.single.question];
+        if(!q)return null;
+        const {mine,theirs}=row.single;
+        const matched=isMatch(row.single.question,mine,theirs);
+        const label=q.complementary?(matched?'Complementary':'Same role'):(matched?'Same':'Different');
+        return <li key={index}><div><strong>{row.name}</strong><span>{q.topic} · 1 shared question</span>
+          <span>{mine===theirs?<>You both chose <q>{q.options[mine]}</q></>:<>You chose <q>{q.options[mine]}</q>; {row.name} chose <q>{q.options[theirs]}</q></>}</span></div><b>{label}</b></li>;
+      }
+      return <li key={index}><div><strong>{row.name}</strong><span>{row.shared?`Based on ${row.shared} shared questions`:'No shared question yet'}</span></div><b>{row.score===null?'—':`${row.score}%`}</b></li>;
+    })}</ul>:<p>No other seated players.</p>}
   </section>;
 }
 
@@ -126,6 +146,7 @@ export default function MobilePage(){
         <p role="status">{alerts.soundMessage}</p>
       </section>
       <div className="mobile-game-status"><span>{status==='ready'?'Ready to play':status==='ended'?'Game finished':status==='paused'?'Game paused':'Playing'} · {room.snapshot.rule}</span><strong>{Math.floor(room.snapshot.timeLeft/60)}:{String(room.snapshot.timeLeft%60).padStart(2,'0')}</strong></div>
+      {(status==='playing'||status==='paused')&&RULE_HELP[room.snapshot.rule]&&<p className="mobile-rule-help"><strong>Extra rule: {room.snapshot.rule}</strong>{RULE_HELP[room.snapshot.rule]}</p>}
       {status!=='ended'&&(availableSeats.length>0?<section className="mobile-join-section" aria-label="Join this table">
         {players.length>0&&<button className="mobile-join-toggle" aria-expanded={showJoin} onClick={()=>setShowJoin(value=>!value)}>{showJoin?'Hide sign-in':'Join this table'} · {availableSeats.length} free {availableSeats.length===1?'seat':'seats'}</button>}
         {(showJoin||!players.length)&&<MobileJoin seats={availableSeats} disabled={disabled} onJoin={join}/>}
@@ -135,7 +156,7 @@ export default function MobilePage(){
         {player&&<section className={`mobile-player ${status==='ended'?'finished':''}`} style={{'--player-color':player.colour,'--base-color':player.baseColour} as CSSProperties} aria-label={`${player.name} player screen`}>
           {alerts.notice&&<><div key={alerts.notice.id} className="mobile-match-halo" aria-hidden="true"/><div className="mobile-match-notice" role="status"><Sparkles size={20}/><span>{alerts.notice.text}</span></div></>}
           <div className="mobile-player-title"><span>Seat {player.seatIndex+1}</span><h1>{player.name}</h1><p>{player.answered?`${player.answered} ${player.answered===1?'answer':'answers'} shaping your colour`:'Your colour starts unique'}</p></div>
-          {status==='ended'?<div className="mobile-waiting"><h2>Thanks for playing!</h2><p>See your match results on the shared screen. Your final colour is shown here.</p></div>
+          {status==='ended'?<><div className="mobile-waiting"><h2>Thanks for playing!</h2><p>{player.results?'Here is how your answers compared with everyone else at the table. Your final colour is shown here.':'See your match results on the shared screen. Your final colour is shown here.'}</p></div>{player.results&&<Results results={player.results}/>}</>
             :player.question?<QuestionControls key={`${player.id}-${player.question.id}`} player={player} disabled={disabled} onAction={act}/>
             :status==='ready'?<div className="mobile-waiting"><h2>Ready when you are</h2><p>Start the game on the PC to draw questions here.</p></div>
             :status==='paused'?<div className="mobile-waiting"><h2>Time for a chat</h2><p>Resume on the PC to draw your next question.</p></div>

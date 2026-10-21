@@ -54,6 +54,13 @@ export const isOptOut=(question:number,option:number)=>QUESTIONS[question]?.tags
 // Two answers to the same question match when they are the same, or different on a complementary question.
 export const isMatch=(question:number,a:number,b:number)=>QUESTIONS[question]?.complementary?a!==b:a===b;
 export const RULES=['Normal UNO','Hidden cards','Pick a player','Give a card','Swap cards'];
+export const RULE_HELP:Record<string,string>={
+  'Normal UNO':'Standard UNO rules, with no extra rule.',
+  'Hidden cards':'Hold your cards facing out so you cannot see them. The other players help you choose what to play.',
+  'Pick a player':'On your turn, pick another player to draw a question in their corner and answer it.',
+  'Give a card':'On your turn, you may give one of your cards to another player, then draw one card from the deck.',
+  'Swap cards':'On your turn, you may swap one card with another player if that player agrees.',
+};
 export type Player={id:string;tokenHash:string;name:string;guest:boolean;demo:boolean;tags:string[];category:string;bandColor:string;tableId:string;status:'seated'|'waiting'|'left';hand:number;score:number|null;visibleScore:number|null;pending:boolean;moveTo?:string;lastMatch:{at:number;withName:string}|null};
 export type Prompt={id:string;originalTarget:string;target:string;question:number;status:'open'|'answered'|'passed'|'expired';invited:boolean;createdRound:number};
 export type Table={id:string;name:string;capacity:number;phase:'lobby'|'playing'|'transition'|'tea'|'ended';round:number;direction:1|-1;current:string|null;done:string[];promptUsed:boolean;prompt:Prompt|null;rule:string;conversation:boolean;teaRequested:boolean;responses:string[];winner:string|null};

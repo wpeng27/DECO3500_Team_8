@@ -455,3 +455,23 @@ svg{flex-shrink:0}a{color:inherit;text-decoration:none}button{display:inline-fle
 .mobile-join-submit,.mobile-join-guest{width:100%;min-height:50px;border-radius:10px;font-size:15px;padding:12px}
 .mobile-join-guest{margin-top:10px;background:transparent;color:#e7ecf8;border:1px solid #66728a}
 .mobile-seats-full{color:#aeb9d0;font-size:13px;margin:0 0 16px}
+/* Current rule and time in the far-side corners, which cannot read the centre circle */
+.corner-rule{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:8px 0 0;padding:6px 10px;border-radius:10px;background:#0c1327b3;color:#e2e7f4;font-size:13px;line-height:1.3}
+.corner-rule span{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#a9b6cf}
+.corner-rule strong{font-size:15px;color:#fff}
+.corner-rule b{margin-left:auto;font-size:15px;font-variant-numeric:tabular-nums;color:#fff}
+@media(max-width:900px){.corner-rule{font-size:11px;padding:4px 8px}.corner-rule strong,.corner-rule b{font-size:12px}}
+/* Phone: rule explanation and end-of-game results */
+.mobile-rule-help{margin:-6px 0 16px;padding:12px 14px;border-radius:12px;background:#ffffff0f;border:1px solid #ffffff22;color:#cdd5ea;font-size:13px;line-height:1.5}
+.mobile-rule-help strong{display:block;color:#fff;font-size:14px;margin-bottom:2px}
+.mobile-results{margin-top:14px;background:#0c1327d9;border:1px solid #ffffff33;padding:18px 16px;border-radius:16px}
+.mobile-results-overall{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mobile-results-overall span{font-size:12px;font-weight:700;letter-spacing:.45px;text-transform:uppercase;color:#cdd5ea}
+.mobile-results-overall strong{font-size:30px;line-height:1;color:#fff}
+.mobile-results>p{font-size:13px;color:#aeb9d0;line-height:1.5;margin:10px 0 12px}
+.mobile-results ul{list-style:none;margin:0;padding:12px 0 0;border-top:1px solid #ffffff24;display:flex;flex-direction:column;gap:10px}
+.mobile-results li{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mobile-results li div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mobile-results li strong{color:#fff;font-size:15px}
+.mobile-results li span{color:#cdd5ea;font-size:12px;line-height:1.4}
+.mobile-results li b{color:#fff;font-size:18px;white-space:nowrap}

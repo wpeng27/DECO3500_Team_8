@@ -10,7 +10,7 @@ The live version needs no installation, and phones can join from any network by 
 
 1. **Rules screen.** Opening the app shows all eight rules in a compact four-column overview on desktop, with the email notice and **Got it, let's start** button below. Narrow screens use fewer columns to keep the text readable. Choose **Got it, let's start** to open the table. This does not start the countdown. During the game, the **Rules** button in the top right opens the same rules over the table (see step 9).
 2. **The table.** The screen is split into four corners, one seat per player, with a circle in the middle for the whole table.
-   - The two top seats are rotated 180° so that players sitting on the far side of the screen can read them.
+   - The two top seats are rotated 180° so that players sitting on the far side of the screen can read them. Because the centre circle faces the near side, each top seat also shows the current extra rule and the time left during play.
 3. **Take a seat.** Each empty corner has two choices:
    - **Sign in**: enter an email and a preferred name.
    - **Continue as Guest**: sit down without sharing anything.
@@ -82,7 +82,7 @@ This builds the app and publishes it. The production `mobile_rooms` table alread
 6. Each occupied seat appears as a player button. Switch between them to show that player's current colour and question controls. The shared table supports four seats; two seated players produce two player buttons and four produce four. Free seats are listed separately in the sign-in form.
 7. Start the game on the PC once at least two players are seated. Draw, answer or skip on either screen. An open question is shared between devices; repeated submissions are handled once. Colour changes, pause/resume, players leaving, game end and new rounds update automatically (normally within about 1–2 seconds).
 
-The mobile panel uses the same colour blend as the PC corner, with the original seat colour around its border. Phones can control any player through the tabs. Sign-in and guest seating work on either device, including during play or a pause. Game start/pause/end, leaving seats and results remain on the PC. New players wait until the next round if the game has finished.
+The mobile panel uses the same colour blend as the PC corner, with the original seat colour around its border. Phones can control any player through the tabs. Sign-in and guest seating work on either device, including during play or a pause. Game start/pause/end, leaving seats remain on the PC. New players wait until the next round if the game has finished. During play, each phone also explains the current extra rule. When the game ends, each phone shows the selected player's match results, the same as their corner on the PC.
 
 **Match alerts:** tap **Enable sound & vibration** on each phone once. It plays a short test chime and vibrates where supported. When the selected player is involved in a new answer match (including complementary roles), the phone plays the chime, gives two short vibrations and shows a match message with a gentle border pulse. Both matching players' phones can receive the alert, even when the answer was submitted on the PC. **Mute alerts** turns off sound and vibration; the visual message remains. **Test alerts** lets you check the volume or resume sound after the browser suspends it.
 
