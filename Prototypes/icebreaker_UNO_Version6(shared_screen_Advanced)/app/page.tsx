@@ -32,11 +32,11 @@ const ruleHelp:Record<string,string>={
 };
 
 const steps=[
-  ['Take a seat','Up to four players: choose a corner, or open Mobile screens on a phone using the same Wi-Fi and choose a free seat.'],
+  ['Take a seat','Up to four players: choose a corner, or scan the QR code under Mobile screens with a phone and choose a free seat.'],
   ['Sign in or play as a Guest','Enter your email and preferred name, or choose Continue as Guest without sharing any details.'],
   ['Start the game','With at least two players seated, press Start game in the centre circle to begin the 10-minute timer.'],
   ['Play UNO with real cards','Use physical UNO cards. The centre circle shows the time and extra rule. Anyone can press Pause to stop the timer, then Resume.'],
-  ['Draw after an action card','After you play Skip, Reverse, Draw Two, Wild or Wild Draw Four (or another player picks you), press Draw a question. Choose an option and Submit answer, or Skip question. Number cards do not trigger questions.'],
+  ['Draw after an action card','After you play Skip, Reverse, Draw Two, Wild or Wild Draw Four (or another player picks you), press Draw a question. Choose an option and Submit answer, or Skip question. Skipping is always fine: it never counts against you or changes your colour, scores or the rule. Number cards do not trigger questions.'],
   ['How answers are used','Matching answers blend the inside colours; borders keep your seat colour. For the task-role question, different answers match because teams need different roles. Similarity scores compare only questions you both answered.'],
   ['Rules change automatically','The table counts answers and skips. Every three answers changes the extra rule and shows Rule changed. Skipped questions do not count towards a rule change.'],
   ['When does the game end?','The game ends when time runs out or someone has no cards left, whichever comes first. For empty hands, press Player out of cards. Each corner then shows similarity results with the other players.'],
@@ -181,7 +181,7 @@ function RulesOverlay({onClose}:{onClose:()=>void}){
 function MatchSummary({overall,matches,seats}:{overall:number|null;matches:MatchRow[];seats:(Seat|null)[]}){
   return <section className="match-summary" aria-label="Match summary">
     <div className="match-overall"><span>Overall match</span><strong>{overall===null?'—':`${overall}%`}</strong></div>
-    <p className="match-explainer">Compares only questions you both answered. A percentage appears once you share 2 or more questions with someone.</p>
+    <p className="match-explainer">Only questions you both answered count; a percentage needs 2 or more. It shows shared answers, not teamwork fit.</p>
     <div className="match-list">{matches.length?matches.map(match=>{
       const peerName=displayName(seats,match.seatIndex);
       if(match.single){
@@ -559,7 +559,7 @@ export default function Home(){
       <div className={`center-circle ${paused?'paused':''} ${ended?'ended':''} ${ruleNotice?'rule-changed':''}`}>
         <span className={`game-state ${!gameStarted?'ready':paused?'paused':'live'} ${ended?'ended':''}`}><i/>{ended?'Results':!gameStarted?'Ready':paused?'Paused':'Playing'}</span>
         {!ended&&<span className={`game-timer ${timeLeft<=60?'low':''}`} role="timer" aria-label="Time left">{formatTime(timeLeft)}</span>}
-        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner compares your answers with every other player: the answers themselves after one shared question, a percentage after two or more.</p></div>
+        {ended?<div className="center-idle result-intro"><Sparkles size={30}/><h2>{endReason==='time'?"Time's up":'A player is out of cards'}</h2><p>Each corner compares your answers with every other player: the answers themselves after one shared question, a percentage after two or more. Use them as conversation starters, not as a verdict on who you should team up with.</p></div>
         :!gameStarted?<div className="center-idle"><h2>Ready to play?</h2><p>{seatedCount<2?'Take your seats. At least 2 players are needed to start.':'Everyone seated? Press Start game to begin the 10-minute timer.'}</p></div>
         :paused?<div className="center-idle"><Pause size={30}/><h2>Game paused</h2><p>The timer is stopped. Take a moment to talk, then press Resume.</p></div>
         :<div className="center-idle" key={rule}>{ruleNotice&&<span className="rule-changed-chip">Rule changed</span>}<span className="rule-name">{rule}</span><p>{ruleHelp[rule]}</p><p className="rule-next">Rule changes after {untilNextRule} more {untilNextRule===1?'answer':'answers'}</p></div>}
@@ -568,7 +568,7 @@ export default function Home(){
           :!gameStarted?<button className="primary start-button" onClick={startGame} disabled={seatedCount<2}><Play size={16}/>Start game</button>
           :<><button className="primary" onClick={togglePause}>{paused?<><Play size={16}/>Resume</>:<><Pause size={16}/>Pause</>}</button><button className="outline-light finish-button" onClick={()=>finishGame('cards')} title="Press when someone has no cards left"><Flag size={16}/>Player out of cards</button></>}
         </div>
-        <small className="seat-count">{ended?'Percentages use shared questions, not private profile data.':`${seatedCount} / 4 seats taken · ${tally.answered} answered · ${tally.skipped} skipped`}</small>
+        <small className="seat-count">{ended?'Percentages reflect only the questions answered in this game.':`${seatedCount} / 4 seats taken · ${tally.answered} answered · ${tally.skipped} skipped`}</small>
       </div>
     </div>
   </main>;
