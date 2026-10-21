@@ -2,6 +2,10 @@
 
 A shared-screen icebreaker for up to four players, with optional mobile player screens on the same network. Everyone plays UNO with real cards. The PC shows the table, countdown and extra rule; phones can switch between seated players, show their live colours, and draw, answer or skip questions.
 
+**Open the live prototype:** https://icebreaker-uno-v6.zhifeng-cheng.workers.dev
+
+The live version needs no installation, and phones can join from any network by scanning the QR code. The [Run locally](#run-locally) steps are only needed for development.
+
 ## How it works
 
 1. **Rules screen.** Opening the app shows all eight rules in a compact four-column overview on desktop, with the email notice and **Got it, let's start** button below. Narrow screens use fewer columns to keep the text readable. Choose **Got it, let's start** to open the table. This does not start the countdown. During the game, the **Rules** button in the top right opens the same rules over the table (see step 9).
@@ -57,6 +61,16 @@ npm run dev
 Then open http://localhost:5173/. If port 5173 is already in use, run `npm run dev -- --port 5174` and open that port instead.
 
 `db:migrate:local` creates the mobile connection table in the local D1 database. It is safe to run again and does not change the older game table. Run it after the first build, before using mobile screens. For a built local server, use `npm start -- --port 5173` after building and migrating; both server modes listen on the local network.
+
+## Deploy or update
+
+The live version runs on Cloudflare Workers (worker `icebreaker-uno-v6`, D1 database `icebreaker-uno-v6-db`). Deploying needs access to that Cloudflare account. Sign in once with `node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js login`, then run:
+
+```sh
+npm run deploy
+```
+
+This builds the app and publishes it. The production `mobile_rooms` table already exists; for a brand-new database only, run `npm run build` and then `npm run db:migrate:remote` once before deploying.
 
 ## Connect mobile screens
 

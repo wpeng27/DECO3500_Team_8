@@ -1,5 +1,5 @@
 {
-  "name": "icebreaker-uno-v5",
+  "name": "icebreaker-uno-v6",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -14,6 +14,8 @@
     "test:mobile": "node --experimental-strip-types --test scripts/mobile-rules.test.mjs",
     "test:connection": "node --experimental-strip-types --test scripts/mobile-connection.test.mjs",
     "db:generate": "drizzle-kit generate",
+    "db:migrate:remote": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --remote --config dist/server/wrangler.json --file drizzle/0001_nappy_maria_hill.sql",
+    "deploy": "npm run build && node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js deploy --keep-vars --config dist/server/wrangler.json",
     "db:migrate:local": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_nappy_maria_hill.sql"
   },
   "dependencies": {

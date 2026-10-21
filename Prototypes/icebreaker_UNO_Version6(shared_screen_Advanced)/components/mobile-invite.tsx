@@ -15,6 +15,8 @@ export function MobileInvite({code,status}:{code:string;status:string}){
   const [copyMessage,setCopyMessage]=useState('');
   const [qr,setQr]=useState<{link:string;image:string}|null>(null);
   const [qrError,setQrError]=useState('');
+  // A deployed (HTTPS) site is reachable from any network, so the LAN address controls are not needed.
+  const hosted=window.location.protocol==='https:'&&!isLoopbackAddress(window.location.hostname);
   const local=isLoopbackAddress(address);
   const link=mobileWebsiteUrl(address,window.location,code);
 
@@ -51,15 +53,17 @@ export function MobileInvite({code,status}:{code:string;status:string}){
   return <section className="mobile-invite" aria-label="Connect mobile screens">
     <div className="mobile-invite-layout"><div>
       <strong><Smartphone size={18}/>Mobile screens</strong>
-      <p>Connect phones to the same Wi-Fi and scan the QR code. The room code is included in the link. If you refresh the PC game, scan its new QR code to rejoin.</p>
-      <div className="mobile-network-fields">
+      {hosted
+        ?<p>Scan the QR code with any phone that has Internet access. The room code is included in the link. If you refresh the PC game, scan its new QR code to rejoin.</p>
+        :<p>Connect phones to the same Wi-Fi and scan the QR code. The room code is included in the link. If you refresh the PC game, scan its new QR code to rejoin.</p>}
+      {!hosted&&<div className="mobile-network-fields">
         <label>PC network address<input value={address} onChange={event=>changeAddress(event.target.value)} placeholder="e.g. 192.168.1.25" spellCheck={false}/></label>
         {networks.length>1&&<label>Detected networks<select value={networks.some(item=>item.address===address)?address:''} onChange={event=>changeAddress(event.target.value)}>
           <option value="" disabled>Choose a network</option>
           {networks.map(item=><option key={item.address} value={item.address}>{item.name} · {item.address}</option>)}
         </select></label>}
-      </div>
-      {detecting&&<p role="status">Finding the PC’s IPv4 address…</p>}
+      </div>}
+      {!hosted&&detecting&&<p role="status">Finding the PC’s IPv4 address…</p>}
       {!detecting&&local&&<p role="status">No LAN address was selected. Connect this PC to Wi-Fi or enter its IPv4 address above.</p>}
       {!link&&<p role="status">Enter the PC’s IP address or hostname, without http:// or a port.</p>}
       {link&&!local&&<div className="mobile-link"><input aria-label="Mobile screen link" readOnly value={link} onFocus={event=>event.target.select()}/><button className="outline" onClick={async()=>{
