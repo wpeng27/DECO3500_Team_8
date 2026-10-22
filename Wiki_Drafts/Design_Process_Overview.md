@@ -69,6 +69,10 @@ V6 responded directly to these findings:
 - **Rule changes.** The extra rule changes after every third *answered* question; skips do not count, so skipping is never a way to escape a rule.
 - **Optional phones.** Phone screens are optional and carry only what is personal to each player: their colour, their question controls, and a sound and vibration alert when they match someone. The table stays on the shared screen.
 
+<img src="https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v6_mobile_seats.png" alt="V6 phone screen connected to the table, showing the timer, extra rule and seats" width="280"> <img src="https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v6_mobile_question.png" alt="V6 phone screen showing a question with Submit answer and Skip question" width="280">
+
+*V6 phone screens: a connected phone shows the time and extra rule and lets the player choose their seat (left), then answer or skip their question privately (right).*
+
 ![V6 shared screen after two players give the same answer](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v6_answer_match.jpg)
 *V6: Seats 3 and 4 gave the same answer, so their inside colours move closer while their borders keep the seat colour.*
 
