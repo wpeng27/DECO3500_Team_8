@@ -4,7 +4,7 @@ A five-player, multi-device companion for a physical UNO icebreaker. It supports
 
 ## Live prototype and usage
 
-**Open the prototype:** https://uno-alliance.xuemingw520.chatgpt.site/
+**Open the prototype:** this version is no longer online, because the original link (https://uno-alliance.xuemingw520.chatgpt.site/) now opens the final version. Run it locally using [Local development](#local-development).
 
 This is a companion for a physical card game, not an online UNO card simulator.
 
@@ -87,4 +87,4 @@ Open the local URL printed by the server. For multi-phone testing, all devices m
 
 This folder contains the source snapshot prepared on **17 September 2026**, including the updated team-assignment labels. Dependencies, generated builds, local databases, user records, private host/player links, Git history, and checkout-local tool state are excluded. The hosting manifest retains only logical bindings, not the original site's project identifier.
 
-Uploading this source to GitHub does **not** redeploy the existing website or copy its live game data. GitHub Pages alone cannot run this server-backed application; a separate deployment requires a Workers-compatible server and a D1 database with the included migrations. The live link above remains the prototype entry point for this repository.
+Uploading this source to GitHub does **not** redeploy the existing website or copy its live game data. GitHub Pages alone cannot run this server-backed application; a separate deployment requires a Workers-compatible server and a D1 database with the included migrations.

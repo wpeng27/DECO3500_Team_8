@@ -73,7 +73,7 @@ Then open http://localhost:5173/. When running locally, phones must be on the sa
 |---|---|
 | 4: shared screen (single device, no phones) | https://icebreaker-uno-v55-shared-screen-helen.summer-lake-0dc2.workers.dev/ |
 | 3: host, shared screen and player views | https://icebreaker-uno-v5.summer-lake-0dc2.workers.dev/ |
-| 1: alliance version | https://uno-alliance.xuemingw520.chatgpt.site/ |
+| 1: alliance version | No longer online (the old link now opens the final version). Run it locally from [`Prototypes/Icebreaker_UNO_Version1`](Prototypes/Icebreaker_UNO_Version1/README.md#local-development). |
 
 ## The problem and our response
 
