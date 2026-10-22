@@ -152,19 +152,19 @@ Summarised from the repository's commit history.
 - Poster images: UNO.png and the mermaid diagram
 
 **Lei Guo**
-- Completed Interview 4 and Interview 8
-- Developed the V5 prototype, using simple English and including a shared screen, interest tags, Guest mode, and wristband colours
-- Created the V5 flowcharts
-- Created the V4 flowcharts
-- Wrote the Design Rationale based on Olsson et al. (2020)
-- Completed the final visual refinement of the Team Proposal Slides
-- Created the final poster, interaction flow diagram, and decoration images
-- Simplified and finalised the final poster text
-- Recorded and compiled the team meeting minutes
-- Organised the Design folder: Concept Version2, Concept Earlier Draft, Core Rules, and Detailed Rules Version2
-- Organised the References folder: Games References and Music References
+- Interview 4 and Interview 8
+- V5 prototype (simple English version with a shared screen, interest tags, Guest mode, and wristband colours)
+- V5 flowcharts
+- V4 flowcharts
+- Design Rationale (Olsson et al., 2020)
+- Final visual refinement of the Team Proposal Slides
+- Final poster: Poster.png, Interaction Flow.png, and decoration images
+- Simplified and finalised the poster text
+- Team meeting minutes
+- Design folder: Concept Version2, Concept Earlier Draft, Core Rules, Detailed Rules Version2
+- References folder (Games References and Music References)
 - Organised the Feature Test Feedback, Interaction Test Feedback, and Design Review Notes
-- Expanded the stand-up document into the Project Update
+- Project Update (expanded from the stand-up document)
 - Restructured the repository and standardised file naming
 
 ## References
