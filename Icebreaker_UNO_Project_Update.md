@@ -238,7 +238,7 @@ During the three-player session, conversation gradually displaced UNO and reduce
 
 > “When every turn required a question, the game slowed down. Eventually it felt easier to stop playing and just chat.”
 
-*Translated and lightly edited from the transcript for clarity.*
+*Translated and lightly edited from our notes for clarity.*
 
 GameFlow identifies concentration, control, clear goals, feedback, and social interaction as connected components of game enjoyment (Sweetser & Wyeth, 2005).
 
@@ -250,7 +250,7 @@ The participant suggested linking conversation to selected UNO action cards rath
 
 > “If I play a Skip card, I should accept a social consequence, such as allowing the skipped player to ask me a question.”
 
-*Translated and lightly edited from the transcript for clarity.*
+*Translated and lightly edited from our notes for clarity.*
 
 This direction is consistent with research showing that cooperation and interdependence can support social closeness (Depping & Mandryk, 2017).
 
