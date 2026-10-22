@@ -70,7 +70,7 @@ In the [final test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbac
 
 | Member | Contribution |
 |---|---|
-| Zhaoyi Gao (team leader) | User research, prototype development, user testing and evaluation **[TEAM: specifics]** |
+| Zhaoyi Gao | User research **[TEAM: specifics]** |
 | Zhifeng Cheng | Domain research, concept brainstorming, technical implementation and deployment of the final prototype **[TEAM: specifics]** |
 | Weijie Peng | Team management and communication, paper research **[TEAM: specifics]** |
 | Xueming Wang | User research, evaluation, prototype development (V1) **[TEAM: specifics]** |
