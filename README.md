@@ -125,10 +125,10 @@ Folder names keep the team's working version numbers, shown in brackets.
 
 | Member | GitHub |
 |---|---|
-| Zhaoyi Gao (team leader) | [Zhaoyi1Gao](https://github.com/Zhaoyi1Gao) |
 | Zhifeng Cheng | [zhifengStephen](https://github.com/zhifengStephen) |
 | Weijie Peng | [wpeng27](https://github.com/wpeng27) |
 | Xueming Wang | [Xueming02](https://github.com/Xueming02) |
+| Zhaoyi Gao | [Zhaoyi1Gao](https://github.com/Zhaoyi1Gao) |
 | Lei Guo | [Guolei-ia](https://github.com/Guolei-ia) |
 
 ## External links
