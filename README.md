@@ -131,6 +131,10 @@ Folder names keep the team's working version numbers, shown in brackets.
 | Zhaoyi Gao | [Zhaoyi1Gao](https://github.com/Zhaoyi1Gao) |
 | Lei Guo | [Guolei-ia](https://github.com/Guolei-ia) |
 
+### Task management
+
+For most of the semester, we divided and followed up tasks in our team WeChat group. In the final weeks, we moved the remaining tasks to [GitHub issues](https://github.com/wpeng27/DECO3500_Team_8/issues). The [WIKI](https://github.com/wpeng27/DECO3500_Team_8/wiki) records our stand-ups, design process and ethical considerations.
+
 ## External links
 
 - [Questionnaire results](https://forms.cloud.microsoft/Pages/AnalysisPage.aspx?AnalyzerToken=vxlCoOK0NGyzn68z98bYejLc9kOrQrC9&id=z3fjtrOdy0aRovrZYFuxXC2dnxS6knNLhKpiupF-qDdUOFgwRUs3VlpUT0Q5NUdTVVBQSEFSTlJCOC4u)

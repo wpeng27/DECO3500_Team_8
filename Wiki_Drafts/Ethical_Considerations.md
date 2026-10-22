@@ -1,7 +1,3 @@
-# Ethical Considerations
-
-> **Draft for the team to review.** Text marked **[TEAM: …]** needs a team member to fill in or confirm.
-
 We assessed Icebreaker UNO with the **Ethical Disclaimer** from the Ethics for Designers toolkit (Gispen, n.d.). The method works through the current situation, the stakeholders and the design intentions. It then imagines the design in use, lists the unethical situations it could create, and sorts them into those the team takes responsibility for and those it does not, with reasons. It is meant to be a living document, so the last section records what changed at each milestone.
 
 ## 1. Current situation
@@ -45,7 +41,7 @@ For students forming groups in a tutorial, Icebreaker UNO should give unfamiliar
 | U2 | **What we built:** scores compare only questions both players answered. One shared question shows the two answers with no percentage, and with more, scores start at 50% and move gradually, so a few answers cannot produce an extreme result. Because final testing showed percentages could still be read as "how well we'd work together", the results now say so directly: each player's results note that they show shared answers, not teamwork fit, and the centre of the table tells players to use them as conversation starters, not as a verdict on who to team up with. |
 | U3 | **What we built:** on the preferred-role question, *different* answers count as a match, so the design rewards complementary roles, not only sameness. Results are given for every pair at the table, not only for the closest match. |
 | U4 | **Current state:** the final prototype asks for an email address at sign-in, but nothing in this version uses it yet. Collecting data before the feature that needs it is a gap in data minimisation, so we limit the harm: Guest mode asks for nothing, the email is never shown to anyone, it is not sent to other phones, and it disappears when the game ends. **Planned use (future improvement):** at the end of a game, a player can choose who they would like to stay in touch with, and the system sends a short introduction email on their behalf. The email would go only to players who also opted in (mutual consent), without revealing either address on screen, and the address would be deleted once the email is sent. This keeps continued contact voluntary (ER7) and spares players from asking for contact details face to face. |
-| U5 | **What we built:** emails are never shown on screen or included in what phones receive. Seats and answers live in the PC browser and are cleared on refresh. Room data expires after 12 hours. The rules screen tells players what connected phones can see and offers Guest mode to avoid sharing details. At the end of a game, phones also show match results, which are the same results already displayed on the shared screen, so no new information is revealed. Interview and testing data are reported without names. **Still open:** document how participant consent was obtained. **[TEAM: confirm]** |
+| U5 | **What we built:** emails are never shown on screen or included in what phones receive. Seats and answers live in the PC browser and are cleared on refresh. Room data expires after 12 hours. The rules screen tells players what connected phones can see and offers Guest mode to avoid sharing details. At the end of a game, phones also show match results, which are the same results already displayed on the shared screen, so no new information is revealed. Interview and testing data are reported without names. **Consent:** before each interview and test we asked participants for verbal consent, and anyone who declined did not take part (see section 6). |
 | U8 | **What we built:** phones are optional, the shared screen carries the table's information, and alerts can be muted, leaving only a visual message. **Still open:** a "vibrate only" default (requested in final testing). |
 | U9 | **What we built:** the session ends with results and nothing else: no contact exchange, no messaging, no team assignment. Whether to continue is left entirely to the players, following ER7. The planned email introduction (U4) would keep this principle: nobody is contacted unless both people opt in. |
 
@@ -58,7 +54,9 @@ For students forming groups in a tutorial, Icebreaker UNO should give unfamiliar
 
 ## 6. Research ethics
 
-- **[TEAM: describe how interviewees and test participants were recruited, how consent was obtained, and whether audio was recorded and later deleted.]**
+- **Recruitment.** Interviewees and test participants were classmates we approached at random in class.
+- **Consent.** Before each interview and test we asked for verbal consent. Taking part was voluntary, and anyone who declined did not take part.
+- **No recordings.** We did not make audio or video recordings of any session.
 - Transcripts and feedback are anonymised (P1–P8 and Participant 1–4), and translated quotes are marked as translated and lightly edited.
 - We report findings as recurring experiences in small samples, not as evidence that the prototype reduces anxiety.
 
@@ -69,7 +67,7 @@ For students forming groups in a tutorial, Icebreaker UNO should give unfamiliar
 | Proposal → Iteration 1 | Dropped the anonymous online forum in favour of a short, face-to-face activity in the tutorial. Added consent to future contact. |
 | Iteration 1 → 3 | Removed secret alliance switching and public leaders (hidden information and status differences). Made questions optional, with change and pass options. |
 | Iteration 3 → 4 | Consolidated onto one shared screen and removed the host role, spreading control across the table. |
-| Iteration 4 → 5 | Teamwork questions with complementary-role matching, cautious similarity scoring, Pause, skip-proof rule changes, and emails excluded from what phones receive. The optional microphone "quiet detector" from Iteration 4 was not carried forward. **[TEAM: confirm why]** |
+| Iteration 4 → 5 | Teamwork questions with complementary-role matching, cautious similarity scoring, Pause, skip-proof rule changes, and emails excluded from what phones receive. The optional microphone "quiet detector" from Iteration 4 was removed: users worried that their casual conversation might be recorded, and a screen that reacts to silence made not talking feel like pressure. |
 | After final testing | The rules screen now says that skipping never counts against you (U1). Results now explain that scores show shared answers, not teamwork fit (U2). The email field is kept for a planned, mutual opt-in email introduction (U4). |
 | Future | Mutual opt-in email introductions (U4). A pass option for Pick a player (U1). A colour-independent match cue (U7). Vibrate-only alerts by default (U8). |
 
