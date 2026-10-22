@@ -7,7 +7,7 @@
 - **Poster:** [Poster.png](https://github.com/wpeng27/DECO3500_Team_8/blob/main/poster_related/images/Poster.png) · [Interaction flow](https://github.com/wpeng27/DECO3500_Team_8/blob/main/poster_related/images/Interaction%20Flow.png)
 - **Live prototype:** https://icebreaker-uno-v6.zhifeng-cheng.workers.dev. Nothing to install and no login: each player signs in with a preferred name and any email address, or chooses **Continue as Guest**. You also need a physical UNO deck. Phones can join by scanning the QR code under **Mobile screens**.
 - **Repository and usage instructions:** [README](https://github.com/wpeng27/DECO3500_Team_8#readme)
-- **Ethical considerations:** [Ethical Considerations](Ethical-Considerations) **[TEAM: check the WIKI page name]**
+- **Ethical considerations:** [Ethical Considerations](Ethical-Considerations)
 
 ## Summary
 
@@ -66,15 +66,84 @@ In the [final test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbac
 
 ## Who did what
 
-**[TEAM: confirm and complete. The duties below come from the Team Charter.]**
+Summarised from the repository's commit history.
 
-| Member | Contribution |
-|---|---|
-| Zhaoyi Gao | User research **[TEAM: specifics]** |
-| Zhifeng Cheng | Domain research, concept brainstorming, technical implementation and deployment of the final prototype **[TEAM: specifics]** |
-| Weijie Peng | Team management and communication, paper research **[TEAM: specifics]** |
-| Xueming Wang | User research, evaluation, prototype development (V1) **[TEAM: specifics]** |
-| Lei Guo | Academic and contextual research, user testing, documenting design rationale **[TEAM: specifics]** |
+**Zhifeng Cheng**
+- Uploaded and updated the Team Charter (docx + pdf)
+- Wrote the three proposal scripts: Domain/Problem Space; Design Opportunity/Audience/Concepts/Prior Attempts; Plan of Work
+- Wrote the prototype function description (prototype design.txt)
+- Maintained the README links (Slides, ACM, presentation script, Miro, questionnaire results)
+- Interview 5
+- Refined UNO Concept v2 document (traces wall, timing anchor, cooperation rewards)
+- Two reference lists: games as low-pressure activities; music for stress reduction
+- V2 card-swapping prototype
+- V5.5 shared-screen prototype, including the microphone quiet detector
+- V6 core gameplay:
+  - 10 teamwork questions and the question-drawing algorithm
+  - 10-minute timer, action-card-triggered questions, and an automatic rule change after every third answer
+  - Start game button, rule-change notice, and seat border colours
+  - Complementary matching for Question 2; answers shown instead of a percentage when players share only one question
+  - Edge-case handling: pause, leaving, timer drift, skips, and duplicate names
+  - Multiple rounds of UI refinement (centre circle, corner panels, colours)
+- Stopped tracking the Vite cache in V6
+- Added explanations that skipping never counts against players and that results do not indicate teamwork fit
+- Final results on phones; current rule and time shown to far-side seats
+- Deployed V6 to Cloudflare
+- Created the poster_related folder
+- Revised the poster texts against V6 (our_solution, social&mobile, user_feedback, scenario), splitting problem and scenario
+- Rewrote the root README
+- Two Wiki drafts: Design Process Overview and Ethical Considerations
+
+**Weijie Peng**
+- Created the GitHub repository
+- Added the team name to the Team Charter
+- Initial interview questions and responses document
+- Interview 3 and Interview 7
+- Interview Analysis
+- Organised the Proposal and Team Charter folders; uploaded the final presentation slides and script
+- New game rules (Rules.md)
+- Prototype testing feedback (Prototype_feedback.md)
+- User testing results (User_Testing.md)
+- Comparative Testing Feedback
+- Final Prototype Feedback
+- V6: Submit and Skip question buttons
+- V6: mobile screen
+- V6: QR code for mobile joining
+- V6: layout fixes
+- Poster text: renamed user_feedback to user_evidence and expanded its content
+- Restored the repository to a working version after it was disrupted by accidental commits
+
+**Xueming Wang**
+- Created the Interviews folder and wrote the interview questions (multiple revisions)
+- Interview 1 and Interview 6
+- Revised the Plan of Work script
+- V1 prototype (red/blue alliances, facilitator view, public board, multi-player phone views)
+- Stand-up document
+- Initial V6 version (icebreaker-uno-matching)
+- Poster text: social&mobile (converted from txt to md)
+- Poster text: rewrote problem as opportunity
+- Cleaned up csv and .DS_Store files
+
+**Zhaoyi Gao**
+- Interview 2
+- Feedback and suggestions on the UNO game (design review)
+- First drafts of the poster texts: domain, problem_scenario, our_solution, user_feedback
+- Added gameplay details to our_solution
+- Feature improvements and similarity calculation documentation
+- Poster images: UNO.png and the mermaid diagram
+
+**Lei Guo**
+- Interview 4 and Interview 8
+- V5 prototype (simple English version with interest tags, Guest mode, and wristband colours)
+- V5 flowcharts
+- V4 flowchart
+- Design folder: Concept Version2, Concept Earlier Draft, Core Rules, Detailed Rules Version2
+- Design Rationale (Olsson et al., 2020)
+- References folder (Games References and Music References)
+- Project Update (expanded from the stand-up document)
+- Organised the Feature Test Feedback, Interaction Test Feedback, and Design Review Notes
+- Restructured the repository and standardised file naming
+- Final poster: Poster.png, Interaction Flow.png, and decoration images
 
 ## References
 
