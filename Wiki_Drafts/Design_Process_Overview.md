@@ -29,6 +29,12 @@ We turned this into seven experience requirements ([Project Update](https://gith
 
 The first prototype (V1) was a five-player companion app with a facilitator view, a public board and a private phone view per player. Players were secretly split into red and blue alliances, and a random rule appeared every three rounds. A formative playtest and design review ([notes](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Design_Review_Notes.md)) found that a question on every turn stalled the game ("eventually it felt easier to stop playing and just chat"). The participant suggested tying questions to action cards instead. The tutor also noted that the screen did little that a paper rule drawn from a hat could not.
 
+![V1 facilitator view during a game](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v1_host_in_game.jpg)
+*V1 facilitator view: the two alliance leaders and their card counts are public, everyone else's alliance is private, and a new rule unlocks every three rounds. (All screenshots on this page were recreated with demo players.)*
+
+![V1 private player screen after a secret alliance switch](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v1_player_private.jpg)
+*V1 private player screen: a player is told secretly that they have switched to the red alliance.*
+
 ### 3. Redesign through theory
 
 Olsson et al. (2020) shifted how we saw the screen: from *enabling* an activity to *facilitating*, *inviting* and *encouraging* interaction through shared attention, collective activity and interdependence ([Design Rationale](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Icebreaker_UNO_Design_Rationale.md)). Together with GameFlow (Sweetser & Wyeth, 2005) and evidence that cooperative play builds social closeness and trust (Depping & Mandryk, 2017; Depping et al., 2016), this led us to remove alliances and secret switching and to trigger questions only from action cards. We kept familiar UNO play as the core of the activity, and explored atmosphere and card-swapping mechanics in small side prototypes (V2).
@@ -37,9 +43,18 @@ Olsson et al. (2020) shifted how we saw the screen: from *enabling* an activity 
 
 V5 added interest tags, Guest mode, optional questions that could be changed or passed, and simulated colour "wristbands" showing shared interests. In the [feature test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Feature_Test_Feedback.md) (4 participants), the activity made talking easier ("Playing gave us something to talk about without having to introduce ourselves formally"), and being able to skip made people comfortable. However, colour and shade were confusing, and some participants missed what others said while checking their phones.
 
+![V5 joining screen with interest tags and Guest mode](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v5_join_interest_tags.jpg)
+*V5 joining screen: players pick interest tags, which set their band colour, or try it as a Guest.*
+
+![V5 shared screen showing an optional question](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v5_shared_screen.jpg)
+*V5 shared screen: a Skip card opens an optional question, which the player can answer, change or skip while the game continues.*
+
 ### 5. Iteration 4: one shared screen
 
 The [interaction test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Interaction_Test_Feedback.md) (3 participants) confirmed that attention was split ("I sometimes wasn't sure whether to look at my phone or the shared display"). It also showed that a watching tutor made the activity feel assessed. V5.5 therefore moved everything onto one shared screen with a corner per player and no host role, so control was spread across the table.
+
+![V5.5 shared screen with four corners](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v5.5_shared_screen.jpg)
+*V5.5: one screen laid flat between four players. Each corner faces its seat, the centre circle shows the current rule, and anyone can pause or switch the rule.*
 
 A [comparative test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Comparative_Testing_Feedback.md) (3 participants) compared a questions-only round with UNO plus questions. All three found UNO more relaxed at the start ("The questions only round felt a bit like an interview"). They also found it harder to listen and follow up while playing: "the next turn started and the moment passed".
 
@@ -53,6 +68,12 @@ V6 responded directly to these findings:
 - **Pause.** Pause stops both the game and the timer, so a good conversation does not have to give way to the next turn.
 - **Rule changes.** The extra rule changes after every third *answered* question; skips do not count, so skipping is never a way to escape a rule.
 - **Optional phones.** Phone screens are optional and carry only what is personal to each player: their colour, their question controls, and a sound and vibration alert when they match someone. The table stays on the shared screen.
+
+![V6 shared screen after two players give the same answer](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v6_answer_match.jpg)
+*V6: Seats 3 and 4 gave the same answer, so their inside colours move closer while their borders keep the seat colour.*
+
+![V6 results after the game](https://raw.githubusercontent.com/wpeng27/DECO3500_Team_8/main/Wiki_Drafts/images/v6_results.jpg)
+*V6 results: with only one shared question, each corner shows the answer the pair chose instead of a percentage, and states that results show shared answers, not teamwork fit.*
 
 In the [final test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker%20UNO%20Final%20Prototype%20Feedback.md) (3 participants), all three understood that the results were a starting point for conversation ("rather than a definite recommendation about who to work with"), and the guest and skip options made them feel in control. Two asked for a QR code to join, which we then added. One participant wondered whether a higher percentage "meant we would work better together", so the results now state that they show shared answers, not teamwork fit. Another asked for it to be clear that skipping does not count against you, which the rules screen now says. In later playtesting, players asked to see their results on their phones, and the two players on the far side of the screen could not read the upside-down centre circle. Phones now show each player's results at the end and explain the current rule, and the far-side seats show the current rule and time in their own corners.
 
