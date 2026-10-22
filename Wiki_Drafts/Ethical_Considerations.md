@@ -56,7 +56,7 @@ For students forming groups in a tutorial, Icebreaker UNO should give unfamiliar
 
 - **Recruitment.** Interviewees and test participants were classmates we approached at random in class.
 - **Consent.** Before each interview and test we asked for verbal consent. Taking part was voluntary, and anyone who declined did not take part.
-- **No recordings.** We did not make audio or video recordings of any session.
+- **Recordings.** Where an interview was audio-recorded, the recording was used only to write the transcript and was then deleted. We made no video recordings.
 - Transcripts and feedback are anonymised (P1–P8 and Participant 1–4), and translated quotes are marked as translated and lightly edited.
 - We report findings as recurring experiences in small samples, not as evidence that the prototype reduces anxiety.
 
