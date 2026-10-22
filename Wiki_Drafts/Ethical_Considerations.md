@@ -1,7 +1,3 @@
-# Ethical Considerations
-
-> **Draft for the team to review.** Text marked **[TEAM: …]** needs a team member to fill in or confirm.
-
 We assessed Icebreaker UNO with the **Ethical Disclaimer** from the Ethics for Designers toolkit (Gispen, n.d.). The method works through the current situation, the stakeholders and the design intentions. It then imagines the design in use, lists the unethical situations it could create, and sorts them into those the team takes responsibility for and those it does not, with reasons. It is meant to be a living document, so the last section records what changed at each milestone.
 
 ## 1. Current situation

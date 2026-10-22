@@ -1,7 +1,3 @@
-# Stand-up Records
-
-> **Draft for the team to review.** Text marked **[TEAM: …]** needs a team member to fill in or confirm.
-
 Each entry records the project state at that point, the outcomes, and the next steps. The Week 9 entry comes from our stand-up document ([Project Update](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Icebreaker_UNO_Project_Update.md)). The later entries are written up from the repository history and our testing documents. **[TEAM: add the date and attendees of each internal stand-up, and any decisions that were made in person but are not recorded here.]**
 
 ## Week 9 stand-up (21 September 2026)
@@ -10,7 +6,7 @@ Each entry records the project state at that point, the outcomes, and the next s
 
 - **User research.** Interviews showed that the hard part of group formation is the first approach, not finding people. Students cannot tell who still needs a group, approaching a table risks a visible refusal, and reliability stays invisible until the project starts. An online looking-for-group thread had existed, but "barely anyone used it".
 - **Experience requirements.** Seven requirements, ER1–ER7, including a legitimate reason to interact (ER1), keeping the game's rhythm (ER2), passing without penalty (ER4) and contact that is never automatic (ER7).
-- **Early prototype (Iteration 1, V1).** A five-player companion app with a facilitator view, a public board and a private phone view. Players were secretly split into red and blue alliances, and a random rule appeared every three rounds.
+- **Early prototype: Iteration 1 (V1).** A five-player companion app with a facilitator view, a public board and a private phone view. Players were secretly split into red and blue alliances, and a random rule appeared every three rounds.
 - **Evaluation.** A formative playtest and design review ([notes](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Design_Review_Notes.md)).
 
 **Outcomes**
@@ -30,7 +26,7 @@ Each entry records the project state at that point, the outcomes, and the next s
 **State**
 
 - Five cooperative interaction rules: Blind Hand, Questions Only, Gift, Swap and Team Round ([core rules](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Design/Icebreaker_UNO_Core_Rules.md)).
-- Side prototype for card swapping and atmosphere (V2), and reference lists on games and music as low-pressure activities.
+- Iteration 2 (V2): side prototypes for card swapping and atmosphere, and reference lists on games and music as low-pressure activities.
 - Iteration 3 (V5): interest tags, Guest mode, optional questions and simulated colour wristbands, with [flowcharts](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Design/IceBreaker_UNO_Flowchart_Version5.md).
 - Iteration 4 (V5.5): one shared screen with a corner per player, plus an optional microphone quiet detector.
 - [Feature test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Feature_Test_Feedback.md) (4 participants) and [interaction test](https://github.com/wpeng27/DECO3500_Team_8/blob/main/Feedbacks%28Testing%29/Icebreaker_UNO_Interaction_Test_Feedback.md) (3 participants).
