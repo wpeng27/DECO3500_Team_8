@@ -104,10 +104,11 @@ The [social & mobile framing](poster_related/texts/social&mobile.md) maps these 
 | [`Icebreaker_UNO_Project_Update.md`](Icebreaker_UNO_Project_Update.md) | Week 9 stand-up summary: research findings, experience requirements (ER1–ER7), early prototype and first evaluation |
 | [`Icebreaker_UNO_Design_Rationale.md`](Icebreaker_UNO_Design_Rationale.md) | How Olsson et al. (2020) shaped the redesign |
 | [`Design/`](Design/) | Concepts, core and detailed rules, [flowcharts](Design/IceBreaker_UNO_Flowchart_Version5.md) and the [question bank](Design/Icebreaker_UNO_Question_Bank.md) |
-| [`Prototypes/`](Prototypes/) | Every prototype iteration (see [Prototype history](#prototype-history)) |
+| [`Prototypes/`](Prototypes/) | Every prototype iteration (see [Prototype history](#prototype-history)). Folder names use the team's working version numbers, so they jump from Version2 to Version5; no iterations are missing |
 | [`Feedbacks(Testing)/`](Feedbacks%28Testing%29/) | User evaluations: [design review](Feedbacks%28Testing%29/Icebreaker_UNO_Design_Review_Notes.md), [comparative test](Feedbacks%28Testing%29/Icebreaker_UNO_Comparative_Testing_Feedback.md), [feature test](Feedbacks%28Testing%29/Icebreaker_UNO_Feature_Test_Feedback.md), [interaction test](Feedbacks%28Testing%29/Icebreaker_UNO_Interaction_Test_Feedback.md) and [final prototype test](Feedbacks%28Testing%29/Icebreaker%20UNO%20Final%20Prototype%20Feedback.md) |
 | [`poster_related/`](poster_related/) | Poster, diagrams, decoration images and poster text |
 | [`Team_Charter/`](Team_Charter/) | Team charter: roles, communication and conflict-resolution plan |
+| [`Wiki_Drafts/`](Wiki_Drafts/) | Drafts of the [WIKI](https://github.com/wpeng27/DECO3500_Team_8/wiki) pages: [design process overview](Wiki_Drafts/Design_Process_Overview.md), [ethical considerations](Wiki_Drafts/Ethical_Considerations.md) and [stand-up records](Wiki_Drafts/Stand_up_Records.md), plus prototype screenshots |
 
 ## Prototype history
 
